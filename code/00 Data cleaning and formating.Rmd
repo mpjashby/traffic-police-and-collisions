@@ -1,0 +1,13 @@
+---
+title: "01 Data cleaning and formating"
+output: html_notebook
+---
+
+# Data sources
+
+The data used in this study are from:
+
+  * *collisions data* from [Road Accident and Safety Statistics Table RAS50016](https://www.gov.uk/government/statistical-data-sets/ras50-contributory-factors)
+  * *police workforce data* and *police functions data* from [Police workforce England and Wales statistics](https://www.gov.uk/government/collections/police-workforce-england-and-wales)
+  * *vehicle kilometres data* from [Road Traffic Statistics Table TRA8904](https://www.gov.uk/government/statistical-data-sets/tra89-traffic-by-local-authority) 
+
