@@ -18,7 +18,8 @@ To do that it will be necessary to control for:
 
 # Project structure
 
-The file structure of the project loosely follows the [Tier Protocol](https://www.projecttier.org/tier-protocol/specifications/).
+The file structure of the project loosely follows the [Tier Protocol](https://www.projecttier.org/tier-protocol/specifications/). Guidance
+on using Git for version control comes from [Vuorre and Curley (2018)](https://doi.org/10.1177/2515245918754826).
 
 The code is split into separate files according to function:
 
