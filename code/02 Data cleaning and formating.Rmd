@@ -1,0 +1,65 @@
+---
+title: "Data cleaning and formating"
+output: html_notebook
+---
+
+# Data sources
+
+The data used in this study are from:
+
+  * **collisions data** from [Road Accident and Safety Statistics Table RAS50016](https://www.gov.uk/government/statistical-data-sets/ras50-contributory-factors)
+  * **police workforce data** and **police functions data** from [HMICFRS Value for Money data](https://www.justiceinspectorates.gov.uk/hmicfrs/data/value-for-money-data/)
+  * **vehicle kilometres data** from [Road Traffic Statistics Table TRA8904](https://www.gov.uk/government/statistical-data-sets/tra89-traffic-by-local-authority) 
+
+All data are available under [version 3 of the Open Government Licence](https://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/). 
+This licence explicitly allows relicensing of further-processed data under a 
+CC-BY licence.
+
+
+# Pre-processing
+
+Since the government typically does not provide data tables in machine-readable 
+formats, the files have been lightly pre-processed before importing into R.
+This includes removing footnotes and multiple header rows, as well as separating
+multi-worksheet spreadsheets into flat CSV files. All other processing (e.g.
+wide-to-long conversion) is done in this file.
+
+
+# Police functions data
+
+These data come from HMICFRS, which produces data on both police workforce and 
+officer functions. The functions data are consistent over time, whereas the 
+corresponding Home Office data used different definitions from 2015 onwards
+(see the [User Guide to Police Workforce Statistics](https://www.gov.uk/government/publications/user-guide-to-police-workforce-statistics)). Officers are considered to be allocated to traffic if they appear in the
+'Roads Policing' category of the HMICFRS data.
+
+One problem with the HMICFRS data are that they are produced in a slightly
+different table format *almost every year*. The data have been pre-processed to
+convert the assortment of CSV, Excel and ODS files on their website to a series
+of flat CSV files. These files are not [tidy](https://cran.r-project.org/web/packages/tidyr/vignettes/tidy-data.html), 
+so some individual wrangling will be required.
+
+
+# Police workforce data
+
+
+# Historical police workforce data
+
+These data are needed for a chart of the number of police per head since the 
+Second World War.
+
+
+# Historical population data
+
+
+# Collision data
+
+
+# Vehicle kilometres data
+
+
+# Combining the data
+
+Each of the sections above outputs a tidy CSV file. We can now combine these to
+produce the final data file that will be used for analysis.
+

@@ -1,0 +1,16 @@
+---
+title: "Packages and functions"
+output: html_notebook
+---
+
+# Packages
+
+*All* the packages needed for this project should be loaded here so they can be
+easily reloaded after a restart.
+
+```{r}
+# loading tidyverse loads ggplot2, dplyr, tidyr, readr, purrr, tibble, stringr
+# and forcats
+library("tidyverse")
+```
+

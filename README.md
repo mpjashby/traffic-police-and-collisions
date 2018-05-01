@@ -23,8 +23,8 @@ on using Git for version control comes from [Vuorre and Curley (2018)](https://d
 
 The code is split into separate files according to function:
 
-  1. Data cleaning and formating
-  2. Data analysis
-  3. Outputs
-  4. Functions
+  1. Packages and functinos
+  2. Data cleaning and formating
+  3. Data analysis
+  4. Outputs
 
