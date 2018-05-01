@@ -18,7 +18,7 @@
 # R markdown HTML output documents
 # (these are automatically created whenever a notebook is saved, but can't be
 # displayed inline by GitHub, whereas .rmd files can)
-.nb.html
+*.nb.html
 
 # Temporary files created by R markdown
 *.utf8.md
