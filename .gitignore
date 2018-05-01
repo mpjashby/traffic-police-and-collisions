@@ -26,4 +26,4 @@
 .Rproj.user
 
 # Old data files that won't actually be used for this project
-./original_data/not_needed/
+./original_data/not_needed/*
