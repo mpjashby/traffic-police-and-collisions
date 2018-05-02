@@ -178,21 +178,166 @@ $(document).ready(function () {
 <ul>
 <li><strong>collisions data</strong> from <a href="https://www.gov.uk/government/statistical-data-sets/ras50-contributory-factors">Road Accident and Safety Statistics Table RAS50016</a></li>
 <li><strong>police workforce data</strong> and <strong>police functions data</strong> from <a href="https://www.justiceinspectorates.gov.uk/hmicfrs/data/value-for-money-data/">HMICFRS Value for Money data</a></li>
+<li><strong>historical police workforce data</strong></li>
 <li><strong>vehicle kilometres data</strong> from <a href="https://www.gov.uk/government/statistical-data-sets/tra89-traffic-by-local-authority">Road Traffic Statistics Table TRA8904</a></li>
 </ul>
 <p>All data are available under <a href="https://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/">version 3 of the Open Government Licence</a>. This licence explicitly allows relicensing of further-processed data under a CC-BY licence.</p>
+<div id="subsidiary-data" class="section level2">
+<h2>Subsidiary data</h2>
+<p>Other data needed for this project:</p>
+<ul>
+<li><a href="http://geoportal.statistics.gov.uk/datasets/local-authority-district-to-community-safety-partnerships-to-police-force-areas-december-2016-lookup-in-england-and-wales">Lookup table between police-force areas and local authorities</a></li>
+</ul>
+</div>
 </div>
 <div id="pre-processing" class="section level1">
 <h1>Pre-processing</h1>
 <p>Since the government typically does not provide data tables in machine-readable formats, the files have been lightly pre-processed before importing into R. This includes removing footnotes and multiple header rows, as well as separating multi-worksheet spreadsheets into flat CSV files. All other processing (e.g. wide-to-long conversion) is done in this file.</p>
 </div>
-<div id="police-functions-data" class="section level1">
-<h1>Police functions data</h1>
+<div id="police-workforce-and-functions-data" class="section level1">
+<h1>Police workforce and functions data</h1>
 <p>These data come from HMICFRS, which produces data on both police workforce and officer functions. The functions data are consistent over time, whereas the corresponding Home Office data used different definitions from 2015 onwards (see the <a href="https://www.gov.uk/government/publications/user-guide-to-police-workforce-statistics">User Guide to Police Workforce Statistics</a>). Officers are considered to be allocated to traffic if they appear in the ‘Roads Policing’ category of the HMICFRS data.</p>
 <p>One problem with the HMICFRS data are that they are produced in a slightly different table format <em>almost every year</em>. The data have been pre-processed to convert the assortment of CSV, Excel and ODS files on their website to a series of flat CSV files. These files are not <a href="https://cran.r-project.org/web/packages/tidyr/vignettes/tidy-data.html">tidy</a>, so some individual wrangling will be required.</p>
-</div>
-<div id="police-workforce-data" class="section level1">
-<h1>Police workforce data</h1>
+<p>Some of the HMICFRS files contain many different variables, and in some cases the manual pre-processing has to be done for each variable. To minimise this work (and any consequent mistakes), the only variables that are needed are:</p>
+<ul>
+<li>police force area population,</li>
+<li>number of police officers, and</li>
+<li>workforce by function.</li>
+</ul>
+<p>Passive provision should be made to include all functions, just in case they are needed for calculating the number of uniformed/front-line officers. Some years of data don’t include the detailed functions, so only high-level functions (e.g. ‘roads policing’) need be included.</p>
+<p>HMICFRS uses data from the year prior to the report, so the data listed on their website as from 2010 is actually data from 2009.</p>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuaG1pYyA8LSBsaXN0KClcbiMgMjAxMCBkYXRhXG5obWljW1tcIjIwMTBcIl1dIDwtIHJlYWRfY3N2KFwiLi4vb3JpZ2luYWxfZGF0YS9obWljX2RhdGFfMjAxMS5jc3ZcIikgJT4lIFxuICBzZWxlY3QoZm9yY2UgPSBcIlBvbGljZSBmb3JjZVwiLCBcbiAgICAgICAgIG9mZmljZXJzID0gXCJIb21lIE9mZmljZSBwdWJsaXNoZWQgZGF0YSAyMDA5LTEwX0ZURSBlcXVpdmFsZW50IHN0YWZmX1BvbGljZSBPZmZpY2Vyc1wiLFxuICAgICAgICAgcm9hZHNfb2ZmaWNlcnMgPSBcIldvcmtmb3JjZSBieSBmdW5jdGlvbiBGVEVfUG9saWNlIE9mZmljZXJzIChhcyBhdCAzMS8wMy8yMDEwKV9Sb2FkcyBwb2xpY2luZ1wiKSAlPiUgXG4gIG11dGF0ZShmb3JjZSA9IHN0cl9yZXBsYWNlX2FsbCh0b2xvd2VyKGZvcmNlKSwgXCIgJiBcIiwgXCIgYW5kIFwiKSwgeWVhciA9IDIwMTApXG5gYGAifQ== -->
+<pre class="r"><code>hmic &lt;- list()
+# 2010 data
+hmic[[&quot;2010&quot;]] &lt;- read_csv(&quot;../original_data/hmic_data_2011.csv&quot;) %&gt;% 
+  select(force = &quot;Police force&quot;, 
+         officers = &quot;Home Office published data 2009-10_FTE equivalent staff_Police Officers&quot;,
+         roads_officers = &quot;Workforce by function FTE_Police Officers (as at 31/03/2010)_Roads policing&quot;) %&gt;% 
+  mutate(force = str_replace_all(tolower(force), &quot; &amp; &quot;, &quot; and &quot;), year = 2010)</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiUGFyc2VkIHdpdGggY29sdW1uIHNwZWNpZmljYXRpb246XG5jb2xzKFxuICAuZGVmYXVsdCA9IGNvbF9pbnRlZ2VyKCksXG4gIGBQb2xpY2UgZm9yY2VgID0gY29sX2NoYXJhY3RlcigpLFxuICBQb3B1bGF0aW9uID0gY29sX251bWJlcigpLFxuICBgSG9tZSBPZmZpY2UgcHVibGlzaGVkIGRhdGEgMjAwOS0xMF9GVEUgZXF1aXZhbGVudCBzdGFmZl9Qb2xpY2UgT2ZmaWNlcnNgID0gY29sX251bWJlcigpLFxuICBgV29ya2ZvcmNlIGJ5IGZ1bmN0aW9uIEZURV9Qb2xpY2UgT2ZmaWNlcnMgKGFzIGF0IDMxLzAzLzIwMTApX0NvbW11bml0eWAgPSBjb2xfbnVtYmVyKCksXG4gIGBXb3JrZm9yY2UgYnkgZnVuY3Rpb24gRlRFX1BvbGljZSBPZmZpY2VycyAoYXMgYXQgMzEvMDMvMjAxMClfSW52ZXN0aWdhdGlvbmAgPSBjb2xfbnVtYmVyKCksXG4gIGBXb3JrZm9yY2UgYnkgZnVuY3Rpb24gRlRFX1BvbGljZSBPZmZpY2VycyAoYXMgYXQgMzEvMDMvMjAxMClfSW50ZWxsaWdlbmNlYCA9IGNvbF9udW1iZXIoKSxcbiAgYFdvcmtmb3JjZSBieSBmdW5jdGlvbiBGVEVfUG9saWNlIE9mZmljZXJzIChhcyBhdCAzMS8wMy8yMDEwKV9PcGVyYXRpb25hbCBzdXBwb3J0YCA9IGNvbF9udW1iZXIoKSxcbiAgYFdvcmtmb3JjZSBieSBmdW5jdGlvbiBGVEVfUG9saWNlIE9mZmljZXJzIChhcyBhdCAzMS8wMy8yMDEwKV9Mb2NhbCBQb2xpY2luZ2AgPSBjb2xfbnVtYmVyKCksXG4gIGBXb3JrZm9yY2UgYnkgZnVuY3Rpb24gRlRFX1BvbGljZSBPZmZpY2VycyAoYXMgYXQgMzEvMDMvMjAxMClfTmF0aW9uYWwgRnVuY3Rpb25zYCA9IGNvbF9udW1iZXIoKSxcbiAgYFdvcmtmb3JjZSBieSBmdW5jdGlvbiBGVEVfUG9saWNlIE9mZmljZXJzIChhcyBhdCAzMS8wMy8yMDEwKV9Ub3RhbGAgPSBjb2xfbnVtYmVyKClcbilcblNlZSBzcGVjKC4uLikgZm9yIGZ1bGwgY29sdW1uIHNwZWNpZmljYXRpb25zLlxuIn0= -->
+<pre><code>Parsed with column specification:
+cols(
+  .default = col_integer(),
+  `Police force` = col_character(),
+  Population = col_number(),
+  `Home Office published data 2009-10_FTE equivalent staff_Police Officers` = col_number(),
+  `Workforce by function FTE_Police Officers (as at 31/03/2010)_Community` = col_number(),
+  `Workforce by function FTE_Police Officers (as at 31/03/2010)_Investigation` = col_number(),
+  `Workforce by function FTE_Police Officers (as at 31/03/2010)_Intelligence` = col_number(),
+  `Workforce by function FTE_Police Officers (as at 31/03/2010)_Operational support` = col_number(),
+  `Workforce by function FTE_Police Officers (as at 31/03/2010)_Local Policing` = col_number(),
+  `Workforce by function FTE_Police Officers (as at 31/03/2010)_National Functions` = col_number(),
+  `Workforce by function FTE_Police Officers (as at 31/03/2010)_Total` = col_number()
+)
+See spec(...) for full column specifications.</code></pre>
+<!-- rnb-output-end -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyAyMDExIGRhdGFcbmhtaWNbW1wiMjAxMVwiXV0gPC0gcmVhZF9jc3YoXCIuLi9vcmlnaW5hbF9kYXRhL2htaWNfZGF0YV8yMDEyLmNzdlwiKSAlPiUgXG4gIHJlbmFtZShvZmZpY2VyX2Z1bmN0aW9uID0gRnVuY3Rpb24pICU+JSBcbiAgcmVuYW1lX2FsbCh0b2xvd2VyKSAlPiUgXG4gIG11dGF0ZShvZmZpY2VyX2Z1bmN0aW9uID0gdG9sb3dlcihvZmZpY2VyX2Z1bmN0aW9uKSkgJT4lIFxuICBmaWx0ZXIob2ZmaWNlcl9mdW5jdGlvbiAlaW4lIGMoXCJ0b3RhbCByb2FkIHBvbGljaW5nXCIsIFwibGV2ZWwgMiBzdW1tYXJ5XCIpKSAlPiUgXG4gIGdhdGhlcihcImZvcmNlXCIsIFwidmFsdWVcIiwgLW9mZmljZXJfZnVuY3Rpb24pICU+JSBcbiAgc3ByZWFkKG9mZmljZXJfZnVuY3Rpb24sIHZhbHVlKSAlPiUgXG4gIHJlbmFtZShvZmZpY2VycyA9IGBsZXZlbCAyIHN1bW1hcnlgLCBcbiAgICAgICAgIHJvYWRzX29mZmljZXJzID0gYHRvdGFsIHJvYWQgcG9saWNpbmdgKSAlPiUgXG4gIG11dGF0ZShmb3JjZSA9IHN0cl9yZXBsYWNlX2FsbCh0b2xvd2VyKGZvcmNlKSwgXCIgJiBcIiwgXCIgYW5kIFwiKSwgeWVhciA9IDIwMTEpXG5gYGAifQ== -->
+<pre class="r"><code># 2011 data
+hmic[[&quot;2011&quot;]] &lt;- read_csv(&quot;../original_data/hmic_data_2012.csv&quot;) %&gt;% 
+  rename(officer_function = Function) %&gt;% 
+  rename_all(tolower) %&gt;% 
+  mutate(officer_function = tolower(officer_function)) %&gt;% 
+  filter(officer_function %in% c(&quot;total road policing&quot;, &quot;level 2 summary&quot;)) %&gt;% 
+  gather(&quot;force&quot;, &quot;value&quot;, -officer_function) %&gt;% 
+  spread(officer_function, value) %&gt;% 
+  rename(officers = `level 2 summary`, 
+         roads_officers = `total road policing`) %&gt;% 
+  mutate(force = str_replace_all(tolower(force), &quot; &amp; &quot;, &quot; and &quot;), year = 2011)</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiUGFyc2VkIHdpdGggY29sdW1uIHNwZWNpZmljYXRpb246XG5jb2xzKFxuICAuZGVmYXVsdCA9IGNvbF9kb3VibGUoKSxcbiAgRnVuY3Rpb24gPSBjb2xfY2hhcmFjdGVyKCksXG4gIGBBdm9uICYgU29tZXJzZXRgID0gY29sX2ludGVnZXIoKSxcbiAgR2xvdWNlc3RlcnNoaXJlID0gY29sX2ludGVnZXIoKSxcbiAgTm9ydGh1bWJyaWEgPSBjb2xfaW50ZWdlcigpXG4pXG5TZWUgc3BlYyguLi4pIGZvciBmdWxsIGNvbHVtbiBzcGVjaWZpY2F0aW9ucy5cbiJ9 -->
+<pre><code>Parsed with column specification:
+cols(
+  .default = col_double(),
+  Function = col_character(),
+  `Avon &amp; Somerset` = col_integer(),
+  Gloucestershire = col_integer(),
+  Northumbria = col_integer()
+)
+See spec(...) for full column specifications.</code></pre>
+<!-- rnb-output-end -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyAyMDEy4oCUMjAxNiBkYXRhXG4jIG5vdGUgdGhhdCB0aGUgMjAxNiBkYXRhIGhhdmUgYW4gYXN0ZXJpc2sgYWZ0ZXIgc29tZSBjYXRlZ29yeSBuYW1lcywgd2hpY2ggaGF2ZVxuIyBiZWVuIHJlbW92ZWQgZHVyaW5nIHByZS1wcm9jZXNzaW5nIHNvIHRoYXQgdGhlIGZpbGUgY2FuIGJlIHByb2Nlc3NlZCBhbG9uZ1xuIyB3aXRoIHRoZSBvdGhlcnNcbmhtaWNfbGlzdCA8LSBsYXBwbHkoMjAxMjoyMDE2LCBmdW5jdGlvbiAoeCkge1xuICByZWFkX2NzdihwYXN0ZTAoXCIuLi9vcmlnaW5hbF9kYXRhL2htaWNfZGF0YV9cIiwgKHggKyAxKSwgXCIuY3N2XCIpKSAlPiUgXG4gICAgcmVuYW1lX2FsbCh0b2xvd2VyKSAlPiUgXG4gICAgcmVuYW1lKHBvYV9jYXRlZ29yeSA9IGBwb2EgY2F0ZWdvcnlgKSAlPiUgXG4gICAgbXV0YXRlKHBvYV9jYXRlZ29yeSA9IHRvbG93ZXIocG9hX2NhdGVnb3J5KSkgJT4lIFxuICAgIGZpbHRlcihwb2FfY2F0ZWdvcnkgJWluJSBjKFwidG90YWwgcm9hZCBwb2xpY2luZ1wiLCBcImxldmVsIDIgc3VtbWFyeVwiKSkgJT4lXG4gICAgZ2F0aGVyKFwia2V5XCIsIFwidmFsdWVcIiwgLXBvYV9jYXRlZ29yeSkgJT4lXG4gICAgc3ByZWFkKHBvYV9jYXRlZ29yeSwgdmFsdWUpICU+JVxuICAgIHJlbmFtZShmb3JjZSA9IGtleSwgb2ZmaWNlcnMgPSBgbGV2ZWwgMiBzdW1tYXJ5YCxcbiAgICAgICAgICAgcm9hZHNfb2ZmaWNlcnMgPSBgdG90YWwgcm9hZCBwb2xpY2luZ2ApICU+JVxuICAgIG11dGF0ZShmb3JjZSA9IHN0cl9yZXBsYWNlX2FsbChmb3JjZSwgXCIgJiBcIiwgXCIgYW5kIFwiKSwgeWVhciA9IHgpXG59KVxuYGBgIn0= -->
+<pre class="r"><code># 2012—2016 data
+# note that the 2016 data have an asterisk after some category names, which have
+# been removed during pre-processing so that the file can be processed along
+# with the others
+hmic_list &lt;- lapply(2012:2016, function (x) {
+  read_csv(paste0(&quot;../original_data/hmic_data_&quot;, (x + 1), &quot;.csv&quot;)) %&gt;% 
+    rename_all(tolower) %&gt;% 
+    rename(poa_category = `poa category`) %&gt;% 
+    mutate(poa_category = tolower(poa_category)) %&gt;% 
+    filter(poa_category %in% c(&quot;total road policing&quot;, &quot;level 2 summary&quot;)) %&gt;%
+    gather(&quot;key&quot;, &quot;value&quot;, -poa_category) %&gt;%
+    spread(poa_category, value) %&gt;%
+    rename(force = key, officers = `level 2 summary`,
+           roads_officers = `total road policing`) %&gt;%
+    mutate(force = str_replace_all(force, &quot; &amp; &quot;, &quot; and &quot;), year = x)
+})</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiUGFyc2VkIHdpdGggY29sdW1uIHNwZWNpZmljYXRpb246XG5jb2xzKFxuICAuZGVmYXVsdCA9IGNvbF9kb3VibGUoKSxcbiAgYFBPQSBjYXRlZ29yeWAgPSBjb2xfY2hhcmFjdGVyKCksXG4gIEdsb3VjZXN0ZXJzaGlyZSA9IGNvbF9pbnRlZ2VyKCksXG4gIE5vcnRodW1icmlhID0gY29sX2ludGVnZXIoKVxuKVxuU2VlIHNwZWMoLi4uKSBmb3IgZnVsbCBjb2x1bW4gc3BlY2lmaWNhdGlvbnMuXG5QYXJzZWQgd2l0aCBjb2x1bW4gc3BlY2lmaWNhdGlvbjpcbmNvbHMoXG4gIC5kZWZhdWx0ID0gY29sX2RvdWJsZSgpLFxuICBgUE9BIGNhdGVnb3J5YCA9IGNvbF9jaGFyYWN0ZXIoKSxcbiAgRG9yc2V0ID0gY29sX2ludGVnZXIoKSxcbiAgYFNvdXRoIFdhbGVzYCA9IGNvbF9pbnRlZ2VyKCksXG4gIGBTb3V0aCBZb3Jrc2hpcmVgID0gY29sX2ludGVnZXIoKSxcbiAgV2lsdHNoaXJlID0gY29sX2ludGVnZXIoKVxuKVxuU2VlIHNwZWMoLi4uKSBmb3IgZnVsbCBjb2x1bW4gc3BlY2lmaWNhdGlvbnMuXG5QYXJzZWQgd2l0aCBjb2x1bW4gc3BlY2lmaWNhdGlvbjpcbmNvbHMoXG4gIC5kZWZhdWx0ID0gY29sX2RvdWJsZSgpLFxuICBgUE9BIGNhdGVnb3J5YCA9IGNvbF9jaGFyYWN0ZXIoKSxcbiAgR2xvdWNlc3RlcnNoaXJlID0gY29sX2ludGVnZXIoKSxcbiAgR3dlbnQgPSBjb2xfaW50ZWdlcigpLFxuICBMYW5jYXNoaXJlID0gY29sX2ludGVnZXIoKSxcbiAgYE5vcnRoIFlvcmtzaGlyZWAgPSBjb2xfaW50ZWdlcigpLFxuICBgU291dGggV2FsZXNgID0gY29sX2ludGVnZXIoKVxuKVxuU2VlIHNwZWMoLi4uKSBmb3IgZnVsbCBjb2x1bW4gc3BlY2lmaWNhdGlvbnMuXG5QYXJzZWQgd2l0aCBjb2x1bW4gc3BlY2lmaWNhdGlvbjpcbmNvbHMoXG4gIC5kZWZhdWx0ID0gY29sX2RvdWJsZSgpLFxuICBgUE9BIGNhdGVnb3J5YCA9IGNvbF9jaGFyYWN0ZXIoKSxcbiAgYENpdHkgb2YgTG9uZG9uYCA9IGNvbF9pbnRlZ2VyKCksXG4gIEd3ZW50ID0gY29sX2ludGVnZXIoKSxcbiAgTGFuY2FzaGlyZSA9IGNvbF9pbnRlZ2VyKCksXG4gIGBOb3J0aCBZb3Jrc2hpcmVgID0gY29sX2ludGVnZXIoKSxcbiAgYFNvdXRoIFdhbGVzYCA9IGNvbF9pbnRlZ2VyKCksXG4gIFdhcndpY2tzaGlyZSA9IGNvbF9pbnRlZ2VyKCksXG4gIGBXZXN0IE1lcmNpYWAgPSBjb2xfaW50ZWdlcigpLFxuICBXaWx0c2hpcmUgPSBjb2xfaW50ZWdlcigpXG4pXG5TZWUgc3BlYyguLi4pIGZvciBmdWxsIGNvbHVtbiBzcGVjaWZpY2F0aW9ucy5cblBhcnNlZCB3aXRoIGNvbHVtbiBzcGVjaWZpY2F0aW9uOlxuY29scyhcbiAgLmRlZmF1bHQgPSBjb2xfZG91YmxlKCksXG4gIGBQT0EgY2F0ZWdvcnlgID0gY29sX2NoYXJhY3RlcigpLFxuICBMYW5jYXNoaXJlID0gY29sX2ludGVnZXIoKSxcbiAgYFNvdXRoIFdhbGVzYCA9IGNvbF9pbnRlZ2VyKClcbilcblNlZSBzcGVjKC4uLikgZm9yIGZ1bGwgY29sdW1uIHNwZWNpZmljYXRpb25zLlxuIn0= -->
+<pre><code>Parsed with column specification:
+cols(
+  .default = col_double(),
+  `POA category` = col_character(),
+  Gloucestershire = col_integer(),
+  Northumbria = col_integer()
+)
+See spec(...) for full column specifications.
+Parsed with column specification:
+cols(
+  .default = col_double(),
+  `POA category` = col_character(),
+  Dorset = col_integer(),
+  `South Wales` = col_integer(),
+  `South Yorkshire` = col_integer(),
+  Wiltshire = col_integer()
+)
+See spec(...) for full column specifications.
+Parsed with column specification:
+cols(
+  .default = col_double(),
+  `POA category` = col_character(),
+  Gloucestershire = col_integer(),
+  Gwent = col_integer(),
+  Lancashire = col_integer(),
+  `North Yorkshire` = col_integer(),
+  `South Wales` = col_integer()
+)
+See spec(...) for full column specifications.
+Parsed with column specification:
+cols(
+  .default = col_double(),
+  `POA category` = col_character(),
+  `City of London` = col_integer(),
+  Gwent = col_integer(),
+  Lancashire = col_integer(),
+  `North Yorkshire` = col_integer(),
+  `South Wales` = col_integer(),
+  Warwickshire = col_integer(),
+  `West Mercia` = col_integer(),
+  Wiltshire = col_integer()
+)
+See spec(...) for full column specifications.
+Parsed with column specification:
+cols(
+  .default = col_double(),
+  `POA category` = col_character(),
+  Lancashire = col_integer(),
+  `South Wales` = col_integer()
+)
+See spec(...) for full column specifications.</code></pre>
+<!-- rnb-output-end -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyBtZXJnZSB0aGUgaW5kaXZpZHVhbCB5ZWFycyB3aXRoIHRoZSBjb21iaW5lZCB5ZWFyc1xuYmluZF9yb3dzKGMoaG1pYywgaG1pY19saXN0KSkgJT4lIFxuICBtdXRhdGUoZm9yY2UgPSBpZl9lbHNlKGZvcmNlID09IFwibWV0cm9wb2xpdGFuIHBvbGljZVwiLCBcIm1ldHJvcG9saXRhblwiLCBmb3JjZSkpICU+JSBcbiAgd3JpdGVfY3N2KFwiLi4vYW5hbHlzaXNfZGF0YS9wb2xpY2Vfb2ZmaWNlcl9jb3VudHMuY3N2XCIsIG5hID0gXCJcIilcbnJtKGhtaWMsIGhtaWNfbGlzdClcbmBgYCJ9 -->
+<pre class="r"><code># merge the individual years with the combined years
+bind_rows(c(hmic, hmic_list)) %&gt;% 
+  mutate(force = if_else(force == &quot;metropolitan police&quot;, &quot;metropolitan&quot;, force)) %&gt;% 
+  write_csv(&quot;../analysis_data/police_officer_counts.csv&quot;, na = &quot;&quot;)
+rm(hmic, hmic_list)</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
 </div>
 <div id="historical-police-workforce-data" class="section level1">
 <h1>Historical police workforce data</h1>
@@ -206,6 +351,90 @@ $(document).ready(function () {
 </div>
 <div id="vehicle-kilometres-data" class="section level1">
 <h1>Vehicle kilometres data</h1>
+<p>Estimates of millions of vehicle-kilometres travelled are published for top-tier local authorities for each year.</p>
+<p>These estimates can be converted to police-force areas (PFAs), except that the ONS lookup table for PFAs only links to local-authority districts. This is fine for unitary authorities, but not for two-tier areas. To get around this we can create a lookup using the ONS lookup file for counties and districts.</p>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyBsb2FkIHRyYWZmaWMgZGF0YVxudHJhZmZpY19kYXRhX2xhIDwtIHJlYWRfY3N2KFwiLi4vb3JpZ2luYWxfZGF0YS90cmFmZmljX2RhdGEuY3N2XCIpICU+JSBcbiAgZ2F0aGVyKFwieWVhclwiLCBcIm1pbGxpb25fa21cIiwgLWBMQSBDb2RlYCwgLWBMb2NhbCBBdXRob3JpdHlgKSAlPiUgXG4gIG11dGF0ZSh5ZWFyID0gYXMuaW50ZWdlcih5ZWFyKSkgJT4lIFxuICAjIHRoZSBuZXh0IGxpbmUgY29ycmVjdHMgdHdvIHByb2JsZW1zIGluIHRoZSB0cmFmZmljIGRhdGEgZmlsZVxuICBtdXRhdGUoXG4gICAgYExBIENvZGVgID0gaWZfZWxzZShgTEEgQ29kZWAgPT0gXCJFMDYwMDAwNDhcIiwgXCJFMDYwMDAwNTdcIiwgYExBIENvZGVgKSxcbiAgICBgTEEgQ29kZWAgPSBpZl9lbHNlKGBMQSBDb2RlYCA9PSBcIkUwODAwMDAyMFwiLCBcIkUwODAwMDAzN1wiLCBgTEEgQ29kZWApXG4gICkgJT4lXG4gIGZpbHRlcih5ZWFyID49IDIwMTApXG5gYGAifQ== -->
+<pre class="r"><code># load traffic data
+traffic_data_la &lt;- read_csv(&quot;../original_data/traffic_data.csv&quot;) %&gt;% 
+  gather(&quot;year&quot;, &quot;million_km&quot;, -`LA Code`, -`Local Authority`) %&gt;% 
+  mutate(year = as.integer(year)) %&gt;% 
+  # the next line corrects two problems in the traffic data file
+  mutate(
+    `LA Code` = if_else(`LA Code` == &quot;E06000048&quot;, &quot;E06000057&quot;, `LA Code`),
+    `LA Code` = if_else(`LA Code` == &quot;E08000020&quot;, &quot;E08000037&quot;, `LA Code`)
+  ) %&gt;%
+  filter(year &gt;= 2010)</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiUGFyc2VkIHdpdGggY29sdW1uIHNwZWNpZmljYXRpb246XG5jb2xzKFxuICAuZGVmYXVsdCA9IGNvbF9pbnRlZ2VyKCksXG4gIGBMQSBDb2RlYCA9IGNvbF9jaGFyYWN0ZXIoKSxcbiAgYExvY2FsIEF1dGhvcml0eWAgPSBjb2xfY2hhcmFjdGVyKClcbilcblNlZSBzcGVjKC4uLikgZm9yIGZ1bGwgY29sdW1uIHNwZWNpZmljYXRpb25zLlxuIn0= -->
+<pre><code>Parsed with column specification:
+cols(
+  .default = col_integer(),
+  `LA Code` = col_character(),
+  `Local Authority` = col_character()
+)
+See spec(...) for full column specifications.</code></pre>
+<!-- rnb-output-end -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyBsb2FkIExBRC0+UEZBIGxvb2t1cCB0YWJsZVxucGZhX2xhZF9sb29rdXAgPC0gcmVhZF9jc3YoXCIuLi9hbmFseXNpc19kYXRhL2xvb2t1cF9wZmFfdG9fbGFkLmNzdlwiKSAlPiUgXG4gIHNlbGVjdChMQUQxNkNELCBmb3JjZSA9IFBGQTE2Tk0pICU+JSBcbiAgbXV0YXRlKGZvcmNlID0gc3RyX3JlcGxhY2VfYWxsKGZvcmNlLCBcIiAmIFwiLCBcIiBhbmQgXCIpKVxuYGBgIn0= -->
+<pre class="r"><code># load LAD-&gt;PFA lookup table
+pfa_lad_lookup &lt;- read_csv(&quot;../analysis_data/lookup_pfa_to_lad.csv&quot;) %&gt;% 
+  select(LAD16CD, force = PFA16NM) %&gt;% 
+  mutate(force = str_replace_all(force, &quot; &amp; &quot;, &quot; and &quot;))</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiUGFyc2VkIHdpdGggY29sdW1uIHNwZWNpZmljYXRpb246XG5jb2xzKFxuICBMQUQxNkNEID0gY29sX2NoYXJhY3RlcigpLFxuICBMQUQxNk5NID0gY29sX2NoYXJhY3RlcigpLFxuICBDU1AxNkNEID0gY29sX2NoYXJhY3RlcigpLFxuICBDU1AxNk5NID0gY29sX2NoYXJhY3RlcigpLFxuICBQRkExNkNEID0gY29sX2NoYXJhY3RlcigpLFxuICBQRkExNk5NID0gY29sX2NoYXJhY3RlcigpLFxuICBGSUQgPSBjb2xfaW50ZWdlcigpXG4pXG4ifQ== -->
+<pre><code>Parsed with column specification:
+cols(
+  LAD16CD = col_character(),
+  LAD16NM = col_character(),
+  CSP16CD = col_character(),
+  CSP16NM = col_character(),
+  PFA16CD = col_character(),
+  PFA16NM = col_character(),
+  FID = col_integer()
+)</code></pre>
+<!-- rnb-output-end -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyBjcmVhdGUgQ1RZLT5QRkEgbG9va3VwIHRhYmxlXG5wZmFfY3R5X2xvb2t1cCA8LSByZWFkX2NzdihcIi4uL2FuYWx5c2lzX2RhdGEvbG9va3VwX2N0eV90b19sYWQuY3N2XCIpICU+JSBcbiAgbGVmdF9qb2luKHBmYV9sYWRfbG9va3VwLCBieSA9IGMoXCJMQUQxNkNEXCIgPSBcIkxBRDE2Q0RcIikpICU+JSBcbiAgZ3JvdXBfYnkoQ1RZMTZDRCkgJT4lXG4gIHN1bW1hcmlzZShmb3JjZSA9IGZpcnN0KGZvcmNlKSlcbmBgYCJ9 -->
+<pre class="r"><code># create CTY-&gt;PFA lookup table
+pfa_cty_lookup &lt;- read_csv(&quot;../analysis_data/lookup_cty_to_lad.csv&quot;) %&gt;% 
+  left_join(pfa_lad_lookup, by = c(&quot;LAD16CD&quot; = &quot;LAD16CD&quot;)) %&gt;% 
+  group_by(CTY16CD) %&gt;%
+  summarise(force = first(force))</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiUGFyc2VkIHdpdGggY29sdW1uIHNwZWNpZmljYXRpb246XG5jb2xzKFxuICBMQUQxNkNEID0gY29sX2NoYXJhY3RlcigpLFxuICBMQUQxNk5NID0gY29sX2NoYXJhY3RlcigpLFxuICBDVFkxNkNEID0gY29sX2NoYXJhY3RlcigpLFxuICBDVFkxNk5NID0gY29sX2NoYXJhY3RlcigpLFxuICBGSUQgPSBjb2xfaW50ZWdlcigpXG4pXG4ifQ== -->
+<pre><code>Parsed with column specification:
+cols(
+  LAD16CD = col_character(),
+  LAD16NM = col_character(),
+  CTY16CD = col_character(),
+  CTY16NM = col_character(),
+  FID = col_integer()
+)</code></pre>
+<!-- rnb-output-end -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyBqb2luIFBGQSBuYW1lIHRvIHRyYWZmaWMgZGF0YVxudHJhZmZpY19kYXRhX2xhIDwtIHRyYWZmaWNfZGF0YV9sYSAlPiUgXG4gIGxlZnRfam9pbihwZmFfbGFkX2xvb2t1cCwgYnkgPSBjKFwiTEEgQ29kZVwiID0gXCJMQUQxNkNEXCIpKSAlPiUgXG4gIGxlZnRfam9pbihwZmFfY3R5X2xvb2t1cCwgYnkgPSBjKFwiTEEgQ29kZVwiID0gXCJDVFkxNkNEXCIpKSAlPiUgXG4gIG11dGF0ZShmb3JjZSA9IGlmX2Vsc2UoaXMubmEoZm9yY2UueCksIGZvcmNlLnksIGZvcmNlLngpKSAlPiUgXG4gIHNlbGVjdCgtZm9yY2UueCwgLWZvcmNlLnkpICU+JSBcbiAgZmlsdGVyKCFpcy5uYShmb3JjZSkpXG4jIHN1bSB0cmFmZmljIGNvdW50cyBmb3IgUEZBc1xudHJhZmZpY19kYXRhX3BmYSA8LSB0cmFmZmljX2RhdGFfbGEgJT4lIFxuICBncm91cF9ieSh5ZWFyLCBmb3JjZSkgJT4lIFxuICBzdW1tYXJpc2UobWlsbGlvbl9rbSA9IHN1bShtaWxsaW9uX2ttKSlcbiMgd3JpdGUgQ1NWIGZpbGVcbnRyYWZmaWNfZGF0YV9wZmEgJT4lIFxuICBtdXRhdGUoZm9yY2UgPSBjYXNlX3doZW4oXG4gICAgZm9yY2UgPT0gXCJMb25kb24sIENpdHkgb2ZcIiB+IFwiQ2l0eSBvZiBMb25kb25cIixcbiAgICBmb3JjZSA9PSBcIk1ldHJvcG9saXRhbiBQb2xpY2VcIiB+IFwiTWV0cm9wb2xpdGFuXCIsXG4gICAgVFJVRSB+IGZvcmNlXG4gICkpICU+JSBcbiAgd3JpdGVfY3N2KFwiLi4vYW5hbHlzaXNfZGF0YS9kYXRhX3RyYWZmaWMuY3N2XCIsIG5hID0gXCJcIilcbnJtKHBmYV9jdHlfbG9va3VwLCBwZmFfbGFkX2xvb2t1cCwgdHJhZmZpY19kYXRhX2xhLCB0cmFmZmljX2RhdGFfcGZhKVxuYGBgIn0= -->
+<pre class="r"><code># join PFA name to traffic data
+traffic_data_la &lt;- traffic_data_la %&gt;% 
+  left_join(pfa_lad_lookup, by = c(&quot;LA Code&quot; = &quot;LAD16CD&quot;)) %&gt;% 
+  left_join(pfa_cty_lookup, by = c(&quot;LA Code&quot; = &quot;CTY16CD&quot;)) %&gt;% 
+  mutate(force = if_else(is.na(force.x), force.y, force.x)) %&gt;% 
+  select(-force.x, -force.y) %&gt;% 
+  filter(!is.na(force))
+# sum traffic counts for PFAs
+traffic_data_pfa &lt;- traffic_data_la %&gt;% 
+  group_by(year, force) %&gt;% 
+  summarise(million_km = sum(million_km))
+# write CSV file
+traffic_data_pfa %&gt;% 
+  mutate(force = case_when(
+    force == &quot;London, City of&quot; ~ &quot;City of London&quot;,
+    force == &quot;Metropolitan Police&quot; ~ &quot;Metropolitan&quot;,
+    TRUE ~ force
+  )) %&gt;% 
+  write_csv(&quot;../analysis_data/data_traffic.csv&quot;, na = &quot;&quot;)
+rm(pfa_cty_lookup, pfa_lad_lookup, traffic_data_la, traffic_data_pfa)</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
 </div>
 <div id="combining-the-data" class="section level1">
 <h1>Combining the data</h1>
@@ -213,7 +442,7 @@ $(document).ready(function () {
 <!-- rnb-text-end -->
 </div>
 
-<div id="rmd-source-code">LS0tCnRpdGxlOiAiRGF0YSBjbGVhbmluZyBhbmQgZm9ybWF0aW5nIgpvdXRwdXQ6IGh0bWxfbm90ZWJvb2sKLS0tCgojIERhdGEgc291cmNlcwoKVGhlIGRhdGEgdXNlZCBpbiB0aGlzIHN0dWR5IGFyZSBmcm9tOgoKICAqICoqY29sbGlzaW9ucyBkYXRhKiogZnJvbSBbUm9hZCBBY2NpZGVudCBhbmQgU2FmZXR5IFN0YXRpc3RpY3MgVGFibGUgUkFTNTAwMTZdKGh0dHBzOi8vd3d3Lmdvdi51ay9nb3Zlcm5tZW50L3N0YXRpc3RpY2FsLWRhdGEtc2V0cy9yYXM1MC1jb250cmlidXRvcnktZmFjdG9ycykKICAqICoqcG9saWNlIHdvcmtmb3JjZSBkYXRhKiogYW5kICoqcG9saWNlIGZ1bmN0aW9ucyBkYXRhKiogZnJvbSBbSE1JQ0ZSUyBWYWx1ZSBmb3IgTW9uZXkgZGF0YV0oaHR0cHM6Ly93d3cuanVzdGljZWluc3BlY3RvcmF0ZXMuZ292LnVrL2htaWNmcnMvZGF0YS92YWx1ZS1mb3ItbW9uZXktZGF0YS8pCiAgKiAqKnZlaGljbGUga2lsb21ldHJlcyBkYXRhKiogZnJvbSBbUm9hZCBUcmFmZmljIFN0YXRpc3RpY3MgVGFibGUgVFJBODkwNF0oaHR0cHM6Ly93d3cuZ292LnVrL2dvdmVybm1lbnQvc3RhdGlzdGljYWwtZGF0YS1zZXRzL3RyYTg5LXRyYWZmaWMtYnktbG9jYWwtYXV0aG9yaXR5KSAKCkFsbCBkYXRhIGFyZSBhdmFpbGFibGUgdW5kZXIgW3ZlcnNpb24gMyBvZiB0aGUgT3BlbiBHb3Zlcm5tZW50IExpY2VuY2VdKGh0dHBzOi8vd3d3Lm5hdGlvbmFsYXJjaGl2ZXMuZ292LnVrL2RvYy9vcGVuLWdvdmVybm1lbnQtbGljZW5jZS92ZXJzaW9uLzMvKS4gClRoaXMgbGljZW5jZSBleHBsaWNpdGx5IGFsbG93cyByZWxpY2Vuc2luZyBvZiBmdXJ0aGVyLXByb2Nlc3NlZCBkYXRhIHVuZGVyIGEgCkNDLUJZIGxpY2VuY2UuCgoKIyBQcmUtcHJvY2Vzc2luZwoKU2luY2UgdGhlIGdvdmVybm1lbnQgdHlwaWNhbGx5IGRvZXMgbm90IHByb3ZpZGUgZGF0YSB0YWJsZXMgaW4gbWFjaGluZS1yZWFkYWJsZSAKZm9ybWF0cywgdGhlIGZpbGVzIGhhdmUgYmVlbiBsaWdodGx5IHByZS1wcm9jZXNzZWQgYmVmb3JlIGltcG9ydGluZyBpbnRvIFIuClRoaXMgaW5jbHVkZXMgcmVtb3ZpbmcgZm9vdG5vdGVzIGFuZCBtdWx0aXBsZSBoZWFkZXIgcm93cywgYXMgd2VsbCBhcyBzZXBhcmF0aW5nCm11bHRpLXdvcmtzaGVldCBzcHJlYWRzaGVldHMgaW50byBmbGF0IENTViBmaWxlcy4gQWxsIG90aGVyIHByb2Nlc3NpbmcgKGUuZy4Kd2lkZS10by1sb25nIGNvbnZlcnNpb24pIGlzIGRvbmUgaW4gdGhpcyBmaWxlLgoKCiMgUG9saWNlIGZ1bmN0aW9ucyBkYXRhCgpUaGVzZSBkYXRhIGNvbWUgZnJvbSBITUlDRlJTLCB3aGljaCBwcm9kdWNlcyBkYXRhIG9uIGJvdGggcG9saWNlIHdvcmtmb3JjZSBhbmQgCm9mZmljZXIgZnVuY3Rpb25zLiBUaGUgZnVuY3Rpb25zIGRhdGEgYXJlIGNvbnNpc3RlbnQgb3ZlciB0aW1lLCB3aGVyZWFzIHRoZSAKY29ycmVzcG9uZGluZyBIb21lIE9mZmljZSBkYXRhIHVzZWQgZGlmZmVyZW50IGRlZmluaXRpb25zIGZyb20gMjAxNSBvbndhcmRzCihzZWUgdGhlIFtVc2VyIEd1aWRlIHRvIFBvbGljZSBXb3JrZm9yY2UgU3RhdGlzdGljc10oaHR0cHM6Ly93d3cuZ292LnVrL2dvdmVybm1lbnQvcHVibGljYXRpb25zL3VzZXItZ3VpZGUtdG8tcG9saWNlLXdvcmtmb3JjZS1zdGF0aXN0aWNzKSkuIE9mZmljZXJzIGFyZSBjb25zaWRlcmVkIHRvIGJlIGFsbG9jYXRlZCB0byB0cmFmZmljIGlmIHRoZXkgYXBwZWFyIGluIHRoZQonUm9hZHMgUG9saWNpbmcnIGNhdGVnb3J5IG9mIHRoZSBITUlDRlJTIGRhdGEuCgpPbmUgcHJvYmxlbSB3aXRoIHRoZSBITUlDRlJTIGRhdGEgYXJlIHRoYXQgdGhleSBhcmUgcHJvZHVjZWQgaW4gYSBzbGlnaHRseQpkaWZmZXJlbnQgdGFibGUgZm9ybWF0ICphbG1vc3QgZXZlcnkgeWVhciouIFRoZSBkYXRhIGhhdmUgYmVlbiBwcmUtcHJvY2Vzc2VkIHRvCmNvbnZlcnQgdGhlIGFzc29ydG1lbnQgb2YgQ1NWLCBFeGNlbCBhbmQgT0RTIGZpbGVzIG9uIHRoZWlyIHdlYnNpdGUgdG8gYSBzZXJpZXMKb2YgZmxhdCBDU1YgZmlsZXMuIFRoZXNlIGZpbGVzIGFyZSBub3QgW3RpZHldKGh0dHBzOi8vY3Jhbi5yLXByb2plY3Qub3JnL3dlYi9wYWNrYWdlcy90aWR5ci92aWduZXR0ZXMvdGlkeS1kYXRhLmh0bWwpLCAKc28gc29tZSBpbmRpdmlkdWFsIHdyYW5nbGluZyB3aWxsIGJlIHJlcXVpcmVkLgoKCiMgUG9saWNlIHdvcmtmb3JjZSBkYXRhCgoKIyBIaXN0b3JpY2FsIHBvbGljZSB3b3JrZm9yY2UgZGF0YQoKVGhlc2UgZGF0YSBhcmUgbmVlZGVkIGZvciBhIGNoYXJ0IG9mIHRoZSBudW1iZXIgb2YgcG9saWNlIHBlciBoZWFkIHNpbmNlIHRoZSAKU2Vjb25kIFdvcmxkIFdhci4KCgojIEhpc3RvcmljYWwgcG9wdWxhdGlvbiBkYXRhCgoKIyBDb2xsaXNpb24gZGF0YQoKCiMgVmVoaWNsZSBraWxvbWV0cmVzIGRhdGEKCgojIENvbWJpbmluZyB0aGUgZGF0YQoKRWFjaCBvZiB0aGUgc2VjdGlvbnMgYWJvdmUgb3V0cHV0cyBhIHRpZHkgQ1NWIGZpbGUuIFdlIGNhbiBub3cgY29tYmluZSB0aGVzZSB0bwpwcm9kdWNlIHRoZSBmaW5hbCBkYXRhIGZpbGUgdGhhdCB3aWxsIGJlIHVzZWQgZm9yIGFuYWx5c2lzLgoK</div>
+<div id="rmd-source-code">LS0tCnRpdGxlOiAiRGF0YSBjbGVhbmluZyBhbmQgZm9ybWF0aW5nIgpvdXRwdXQ6IGh0bWxfbm90ZWJvb2sKLS0tCgojIERhdGEgc291cmNlcwoKVGhlIGRhdGEgdXNlZCBpbiB0aGlzIHN0dWR5IGFyZSBmcm9tOgoKICAqICoqY29sbGlzaW9ucyBkYXRhKiogZnJvbSBbUm9hZCBBY2NpZGVudCBhbmQgU2FmZXR5IFN0YXRpc3RpY3MgVGFibGUgUkFTNTAwMTZdKGh0dHBzOi8vd3d3Lmdvdi51ay9nb3Zlcm5tZW50L3N0YXRpc3RpY2FsLWRhdGEtc2V0cy9yYXM1MC1jb250cmlidXRvcnktZmFjdG9ycykKICAqICoqcG9saWNlIHdvcmtmb3JjZSBkYXRhKiogYW5kICoqcG9saWNlIGZ1bmN0aW9ucyBkYXRhKiogZnJvbSBbSE1JQ0ZSUyBWYWx1ZSBmb3IgTW9uZXkgZGF0YV0oaHR0cHM6Ly93d3cuanVzdGljZWluc3BlY3RvcmF0ZXMuZ292LnVrL2htaWNmcnMvZGF0YS92YWx1ZS1mb3ItbW9uZXktZGF0YS8pCiAgKiAqKmhpc3RvcmljYWwgcG9saWNlIHdvcmtmb3JjZSBkYXRhKioKICAqICoqdmVoaWNsZSBraWxvbWV0cmVzIGRhdGEqKiBmcm9tIFtSb2FkIFRyYWZmaWMgU3RhdGlzdGljcyBUYWJsZSBUUkE4OTA0XShodHRwczovL3d3dy5nb3YudWsvZ292ZXJubWVudC9zdGF0aXN0aWNhbC1kYXRhLXNldHMvdHJhODktdHJhZmZpYy1ieS1sb2NhbC1hdXRob3JpdHkpIAoKQWxsIGRhdGEgYXJlIGF2YWlsYWJsZSB1bmRlciBbdmVyc2lvbiAzIG9mIHRoZSBPcGVuIEdvdmVybm1lbnQgTGljZW5jZV0oaHR0cHM6Ly93d3cubmF0aW9uYWxhcmNoaXZlcy5nb3YudWsvZG9jL29wZW4tZ292ZXJubWVudC1saWNlbmNlL3ZlcnNpb24vMy8pLiAKVGhpcyBsaWNlbmNlIGV4cGxpY2l0bHkgYWxsb3dzIHJlbGljZW5zaW5nIG9mIGZ1cnRoZXItcHJvY2Vzc2VkIGRhdGEgdW5kZXIgYSAKQ0MtQlkgbGljZW5jZS4KCiMjIFN1YnNpZGlhcnkgZGF0YQoKT3RoZXIgZGF0YSBuZWVkZWQgZm9yIHRoaXMgcHJvamVjdDoKCiAgKiBbTG9va3VwIHRhYmxlIGJldHdlZW4gcG9saWNlLWZvcmNlIGFyZWFzIGFuZCBsb2NhbCBhdXRob3JpdGllc10oaHR0cDovL2dlb3BvcnRhbC5zdGF0aXN0aWNzLmdvdi51ay9kYXRhc2V0cy9sb2NhbC1hdXRob3JpdHktZGlzdHJpY3QtdG8tY29tbXVuaXR5LXNhZmV0eS1wYXJ0bmVyc2hpcHMtdG8tcG9saWNlLWZvcmNlLWFyZWFzLWRlY2VtYmVyLTIwMTYtbG9va3VwLWluLWVuZ2xhbmQtYW5kLXdhbGVzKQoKCiMgUHJlLXByb2Nlc3NpbmcKClNpbmNlIHRoZSBnb3Zlcm5tZW50IHR5cGljYWxseSBkb2VzIG5vdCBwcm92aWRlIGRhdGEgdGFibGVzIGluIG1hY2hpbmUtcmVhZGFibGUgCmZvcm1hdHMsIHRoZSBmaWxlcyBoYXZlIGJlZW4gbGlnaHRseSBwcmUtcHJvY2Vzc2VkIGJlZm9yZSBpbXBvcnRpbmcgaW50byBSLgpUaGlzIGluY2x1ZGVzIHJlbW92aW5nIGZvb3Rub3RlcyBhbmQgbXVsdGlwbGUgaGVhZGVyIHJvd3MsIGFzIHdlbGwgYXMgc2VwYXJhdGluZwptdWx0aS13b3Jrc2hlZXQgc3ByZWFkc2hlZXRzIGludG8gZmxhdCBDU1YgZmlsZXMuIEFsbCBvdGhlciBwcm9jZXNzaW5nIChlLmcuCndpZGUtdG8tbG9uZyBjb252ZXJzaW9uKSBpcyBkb25lIGluIHRoaXMgZmlsZS4KCgojIFBvbGljZSB3b3JrZm9yY2UgYW5kIGZ1bmN0aW9ucyBkYXRhCgpUaGVzZSBkYXRhIGNvbWUgZnJvbSBITUlDRlJTLCB3aGljaCBwcm9kdWNlcyBkYXRhIG9uIGJvdGggcG9saWNlIHdvcmtmb3JjZSBhbmQgCm9mZmljZXIgZnVuY3Rpb25zLiBUaGUgZnVuY3Rpb25zIGRhdGEgYXJlIGNvbnNpc3RlbnQgb3ZlciB0aW1lLCB3aGVyZWFzIHRoZSAKY29ycmVzcG9uZGluZyBIb21lIE9mZmljZSBkYXRhIHVzZWQgZGlmZmVyZW50IGRlZmluaXRpb25zIGZyb20gMjAxNSBvbndhcmRzCihzZWUgdGhlIFtVc2VyIEd1aWRlIHRvIFBvbGljZSBXb3JrZm9yY2UgU3RhdGlzdGljc10oaHR0cHM6Ly93d3cuZ292LnVrL2dvdmVybm1lbnQvcHVibGljYXRpb25zL3VzZXItZ3VpZGUtdG8tcG9saWNlLXdvcmtmb3JjZS1zdGF0aXN0aWNzKSkuIE9mZmljZXJzIGFyZSBjb25zaWRlcmVkIHRvIGJlIGFsbG9jYXRlZCB0byB0cmFmZmljIGlmIHRoZXkgYXBwZWFyIGluIHRoZQonUm9hZHMgUG9saWNpbmcnIGNhdGVnb3J5IG9mIHRoZSBITUlDRlJTIGRhdGEuCgpPbmUgcHJvYmxlbSB3aXRoIHRoZSBITUlDRlJTIGRhdGEgYXJlIHRoYXQgdGhleSBhcmUgcHJvZHVjZWQgaW4gYSBzbGlnaHRseQpkaWZmZXJlbnQgdGFibGUgZm9ybWF0ICphbG1vc3QgZXZlcnkgeWVhciouIFRoZSBkYXRhIGhhdmUgYmVlbiBwcmUtcHJvY2Vzc2VkIHRvCmNvbnZlcnQgdGhlIGFzc29ydG1lbnQgb2YgQ1NWLCBFeGNlbCBhbmQgT0RTIGZpbGVzIG9uIHRoZWlyIHdlYnNpdGUgdG8gYSBzZXJpZXMKb2YgZmxhdCBDU1YgZmlsZXMuIFRoZXNlIGZpbGVzIGFyZSBub3QgW3RpZHldKGh0dHBzOi8vY3Jhbi5yLXByb2plY3Qub3JnL3dlYi9wYWNrYWdlcy90aWR5ci92aWduZXR0ZXMvdGlkeS1kYXRhLmh0bWwpLCAKc28gc29tZSBpbmRpdmlkdWFsIHdyYW5nbGluZyB3aWxsIGJlIHJlcXVpcmVkLgoKU29tZSBvZiB0aGUgSE1JQ0ZSUyBmaWxlcyBjb250YWluIG1hbnkgZGlmZmVyZW50IHZhcmlhYmxlcywgYW5kIGluIHNvbWUgY2FzZXMKdGhlIG1hbnVhbCBwcmUtcHJvY2Vzc2luZyBoYXMgdG8gYmUgZG9uZSBmb3IgZWFjaCB2YXJpYWJsZS4gVG8gbWluaW1pc2UgdGhpcwp3b3JrIChhbmQgYW55IGNvbnNlcXVlbnQgbWlzdGFrZXMpLCB0aGUgb25seSB2YXJpYWJsZXMgdGhhdCBhcmUgbmVlZGVkIGFyZToKCiAgKiBwb2xpY2UgZm9yY2UgYXJlYSBwb3B1bGF0aW9uLAogICogbnVtYmVyIG9mIHBvbGljZSBvZmZpY2VycywgYW5kCiAgKiB3b3JrZm9yY2UgYnkgZnVuY3Rpb24uCgpQYXNzaXZlIHByb3Zpc2lvbiBzaG91bGQgYmUgbWFkZSB0byBpbmNsdWRlIGFsbCBmdW5jdGlvbnMsIGp1c3QgaW4gY2FzZSB0aGV5IGFyZSAKbmVlZGVkIGZvciBjYWxjdWxhdGluZyB0aGUgbnVtYmVyIG9mIHVuaWZvcm1lZC9mcm9udC1saW5lIG9mZmljZXJzLiBTb21lIHllYXJzIApvZiBkYXRhIGRvbid0IGluY2x1ZGUgdGhlIGRldGFpbGVkIGZ1bmN0aW9ucywgc28gb25seSBoaWdoLWxldmVsIGZ1bmN0aW9ucyAoZS5nLiAKJ3JvYWRzIHBvbGljaW5nJykgbmVlZCBiZSBpbmNsdWRlZC4KCkhNSUNGUlMgdXNlcyBkYXRhIGZyb20gdGhlIHllYXIgcHJpb3IgdG8gdGhlIHJlcG9ydCwgc28gdGhlIGRhdGEgbGlzdGVkIG9uIHRoZWlyIAp3ZWJzaXRlIGFzIGZyb20gMjAxMCBpcyBhY3R1YWxseSBkYXRhIGZyb20gMjAwOS4KCmBgYHtyfQpobWljIDwtIGxpc3QoKQoKIyAyMDEwIGRhdGEKaG1pY1tbIjIwMTAiXV0gPC0gcmVhZF9jc3YoIi4uL29yaWdpbmFsX2RhdGEvaG1pY19kYXRhXzIwMTEuY3N2IikgJT4lIAogIHNlbGVjdChmb3JjZSA9ICJQb2xpY2UgZm9yY2UiLCAKICAgICAgICAgb2ZmaWNlcnMgPSAiSG9tZSBPZmZpY2UgcHVibGlzaGVkIGRhdGEgMjAwOS0xMF9GVEUgZXF1aXZhbGVudCBzdGFmZl9Qb2xpY2UgT2ZmaWNlcnMiLAogICAgICAgICByb2Fkc19vZmZpY2VycyA9ICJXb3JrZm9yY2UgYnkgZnVuY3Rpb24gRlRFX1BvbGljZSBPZmZpY2VycyAoYXMgYXQgMzEvMDMvMjAxMClfUm9hZHMgcG9saWNpbmciKSAlPiUgCiAgbXV0YXRlKGZvcmNlID0gc3RyX3JlcGxhY2VfYWxsKHRvbG93ZXIoZm9yY2UpLCAiICYgIiwgIiBhbmQgIiksIHllYXIgPSAyMDEwKQoKIyAyMDExIGRhdGEKaG1pY1tbIjIwMTEiXV0gPC0gcmVhZF9jc3YoIi4uL29yaWdpbmFsX2RhdGEvaG1pY19kYXRhXzIwMTIuY3N2IikgJT4lIAogIHJlbmFtZShvZmZpY2VyX2Z1bmN0aW9uID0gRnVuY3Rpb24pICU+JSAKICByZW5hbWVfYWxsKHRvbG93ZXIpICU+JSAKICBtdXRhdGUob2ZmaWNlcl9mdW5jdGlvbiA9IHRvbG93ZXIob2ZmaWNlcl9mdW5jdGlvbikpICU+JSAKICBmaWx0ZXIob2ZmaWNlcl9mdW5jdGlvbiAlaW4lIGMoInRvdGFsIHJvYWQgcG9saWNpbmciLCAibGV2ZWwgMiBzdW1tYXJ5IikpICU+JSAKICBnYXRoZXIoImZvcmNlIiwgInZhbHVlIiwgLW9mZmljZXJfZnVuY3Rpb24pICU+JSAKICBzcHJlYWQob2ZmaWNlcl9mdW5jdGlvbiwgdmFsdWUpICU+JSAKICByZW5hbWUob2ZmaWNlcnMgPSBgbGV2ZWwgMiBzdW1tYXJ5YCwgCiAgICAgICAgIHJvYWRzX29mZmljZXJzID0gYHRvdGFsIHJvYWQgcG9saWNpbmdgKSAlPiUgCiAgbXV0YXRlKGZvcmNlID0gc3RyX3JlcGxhY2VfYWxsKHRvbG93ZXIoZm9yY2UpLCAiICYgIiwgIiBhbmQgIiksIHllYXIgPSAyMDExKQoKIyAyMDEy4oCUMjAxNiBkYXRhCiMgbm90ZSB0aGF0IHRoZSAyMDE2IGRhdGEgaGF2ZSBhbiBhc3RlcmlzayBhZnRlciBzb21lIGNhdGVnb3J5IG5hbWVzLCB3aGljaCBoYXZlCiMgYmVlbiByZW1vdmVkIGR1cmluZyBwcmUtcHJvY2Vzc2luZyBzbyB0aGF0IHRoZSBmaWxlIGNhbiBiZSBwcm9jZXNzZWQgYWxvbmcKIyB3aXRoIHRoZSBvdGhlcnMKaG1pY19saXN0IDwtIGxhcHBseSgyMDEyOjIwMTYsIGZ1bmN0aW9uICh4KSB7CiAgcmVhZF9jc3YocGFzdGUwKCIuLi9vcmlnaW5hbF9kYXRhL2htaWNfZGF0YV8iLCAoeCArIDEpLCAiLmNzdiIpKSAlPiUgCiAgICByZW5hbWVfYWxsKHRvbG93ZXIpICU+JSAKICAgIHJlbmFtZShwb2FfY2F0ZWdvcnkgPSBgcG9hIGNhdGVnb3J5YCkgJT4lIAogICAgbXV0YXRlKHBvYV9jYXRlZ29yeSA9IHRvbG93ZXIocG9hX2NhdGVnb3J5KSkgJT4lIAogICAgZmlsdGVyKHBvYV9jYXRlZ29yeSAlaW4lIGMoInRvdGFsIHJvYWQgcG9saWNpbmciLCAibGV2ZWwgMiBzdW1tYXJ5IikpICU+JQogICAgZ2F0aGVyKCJrZXkiLCAidmFsdWUiLCAtcG9hX2NhdGVnb3J5KSAlPiUKICAgIHNwcmVhZChwb2FfY2F0ZWdvcnksIHZhbHVlKSAlPiUKICAgIHJlbmFtZShmb3JjZSA9IGtleSwgb2ZmaWNlcnMgPSBgbGV2ZWwgMiBzdW1tYXJ5YCwKICAgICAgICAgICByb2Fkc19vZmZpY2VycyA9IGB0b3RhbCByb2FkIHBvbGljaW5nYCkgJT4lCiAgICBtdXRhdGUoZm9yY2UgPSBzdHJfcmVwbGFjZV9hbGwoZm9yY2UsICIgJiAiLCAiIGFuZCAiKSwgeWVhciA9IHgpCn0pCgojIG1lcmdlIHRoZSBpbmRpdmlkdWFsIHllYXJzIHdpdGggdGhlIGNvbWJpbmVkIHllYXJzCmJpbmRfcm93cyhjKGhtaWMsIGhtaWNfbGlzdCkpICU+JSAKICBtdXRhdGUoZm9yY2UgPSBpZl9lbHNlKGZvcmNlID09ICJtZXRyb3BvbGl0YW4gcG9saWNlIiwgIm1ldHJvcG9saXRhbiIsIAogICAgICAgICAgICAgICAgICAgICAgICAgZm9yY2UpKSAlPiUgCiAgd3JpdGVfY3N2KCIuLi9hbmFseXNpc19kYXRhL2RhdGFfb2ZmaWNlcl9jb3VudHMuY3N2IiwgbmEgPSAiIikKcm0oaG1pYywgaG1pY19saXN0KQoKYGBgCgoKIyBIaXN0b3JpY2FsIHBvbGljZSB3b3JrZm9yY2UgZGF0YQoKVGhlc2UgZGF0YSBhcmUgbmVlZGVkIGZvciBhIGNoYXJ0IG9mIHRoZSBudW1iZXIgb2YgcG9saWNlIHBlciBoZWFkIHNpbmNlIHRoZSAKU2Vjb25kIFdvcmxkIFdhci4KCgojIEhpc3RvcmljYWwgcG9wdWxhdGlvbiBkYXRhCgoKIyBDb2xsaXNpb24gZGF0YQoKCiMgVmVoaWNsZSBraWxvbWV0cmVzIGRhdGEKCkVzdGltYXRlcyBvZiBtaWxsaW9ucyBvZiB2ZWhpY2xlLWtpbG9tZXRyZXMgdHJhdmVsbGVkIGFyZSBwdWJsaXNoZWQgZm9yIHRvcC10aWVyCmxvY2FsIGF1dGhvcml0aWVzIGZvciBlYWNoIHllYXIuCgpUaGVzZSBlc3RpbWF0ZXMgY2FuIGJlIGNvbnZlcnRlZCB0byBwb2xpY2UtZm9yY2UgYXJlYXMgKFBGQXMpLCBleGNlcHQgdGhhdCB0aGUgCk9OUyBsb29rdXAgdGFibGUgZm9yIFBGQXMgb25seSBsaW5rcyB0byBsb2NhbC1hdXRob3JpdHkgZGlzdHJpY3RzLiBUaGlzIGlzIGZpbmUKZm9yIHVuaXRhcnkgYXV0aG9yaXRpZXMsIGJ1dCBub3QgZm9yIHR3by10aWVyIGFyZWFzLiBUbyBnZXQgYXJvdW5kIHRoaXMgd2UgY2FuCmNyZWF0ZSBhIGxvb2t1cCB1c2luZyB0aGUgT05TIGxvb2t1cCBmaWxlIGZvciBjb3VudGllcyBhbmQgZGlzdHJpY3RzLgoKYGBge3J9CiMgbG9hZCB0cmFmZmljIGRhdGEKdHJhZmZpY19kYXRhX2xhIDwtIHJlYWRfY3N2KCIuLi9vcmlnaW5hbF9kYXRhL3RyYWZmaWNfZGF0YS5jc3YiKSAlPiUgCiAgZ2F0aGVyKCJ5ZWFyIiwgIm1pbGxpb25fa20iLCAtYExBIENvZGVgLCAtYExvY2FsIEF1dGhvcml0eWApICU+JSAKICBtdXRhdGUoeWVhciA9IGFzLmludGVnZXIoeWVhcikpICU+JSAKICAjIHRoZSBuZXh0IGxpbmUgY29ycmVjdHMgdHdvIHByb2JsZW1zIGluIHRoZSB0cmFmZmljIGRhdGEgZmlsZQogIG11dGF0ZSgKICAgIGBMQSBDb2RlYCA9IGlmX2Vsc2UoYExBIENvZGVgID09ICJFMDYwMDAwNDgiLCAiRTA2MDAwMDU3IiwgYExBIENvZGVgKSwKICAgIGBMQSBDb2RlYCA9IGlmX2Vsc2UoYExBIENvZGVgID09ICJFMDgwMDAwMjAiLCAiRTA4MDAwMDM3IiwgYExBIENvZGVgKQogICkgJT4lCiAgZmlsdGVyKHllYXIgPj0gMjAxMCkKCiMgbG9hZCBMQUQtPlBGQSBsb29rdXAgdGFibGUKcGZhX2xhZF9sb29rdXAgPC0gcmVhZF9jc3YoIi4uL2FuYWx5c2lzX2RhdGEvbG9va3VwX3BmYV90b19sYWQuY3N2IikgJT4lIAogIHNlbGVjdChMQUQxNkNELCBmb3JjZSA9IFBGQTE2Tk0pICU+JSAKICBtdXRhdGUoZm9yY2UgPSBzdHJfcmVwbGFjZV9hbGwoZm9yY2UsICIgJiAiLCAiIGFuZCAiKSkKCiMgY3JlYXRlIENUWS0+UEZBIGxvb2t1cCB0YWJsZQpwZmFfY3R5X2xvb2t1cCA8LSByZWFkX2NzdigiLi4vYW5hbHlzaXNfZGF0YS9sb29rdXBfY3R5X3RvX2xhZC5jc3YiKSAlPiUgCiAgbGVmdF9qb2luKHBmYV9sYWRfbG9va3VwLCBieSA9IGMoIkxBRDE2Q0QiID0gIkxBRDE2Q0QiKSkgJT4lIAogIGdyb3VwX2J5KENUWTE2Q0QpICU+JQogIHN1bW1hcmlzZShmb3JjZSA9IGZpcnN0KGZvcmNlKSkKCiMgam9pbiBQRkEgbmFtZSB0byB0cmFmZmljIGRhdGEKdHJhZmZpY19kYXRhX2xhIDwtIHRyYWZmaWNfZGF0YV9sYSAlPiUgCiAgbGVmdF9qb2luKHBmYV9sYWRfbG9va3VwLCBieSA9IGMoIkxBIENvZGUiID0gIkxBRDE2Q0QiKSkgJT4lIAogIGxlZnRfam9pbihwZmFfY3R5X2xvb2t1cCwgYnkgPSBjKCJMQSBDb2RlIiA9ICJDVFkxNkNEIikpICU+JSAKICBtdXRhdGUoZm9yY2UgPSBpZl9lbHNlKGlzLm5hKGZvcmNlLngpLCBmb3JjZS55LCBmb3JjZS54KSkgJT4lIAogIHNlbGVjdCgtZm9yY2UueCwgLWZvcmNlLnkpICU+JSAKICBmaWx0ZXIoIWlzLm5hKGZvcmNlKSkKCiMgc3VtIHRyYWZmaWMgY291bnRzIGZvciBQRkFzCnRyYWZmaWNfZGF0YV9wZmEgPC0gdHJhZmZpY19kYXRhX2xhICU+JSAKICBncm91cF9ieSh5ZWFyLCBmb3JjZSkgJT4lIAogIHN1bW1hcmlzZShtaWxsaW9uX2ttID0gc3VtKG1pbGxpb25fa20pKQoKIyB3cml0ZSBDU1YgZmlsZQp0cmFmZmljX2RhdGFfcGZhICU+JSAKICBtdXRhdGUoZm9yY2UgPSBjYXNlX3doZW4oCiAgICBmb3JjZSA9PSAiTG9uZG9uLCBDaXR5IG9mIiB+ICJDaXR5IG9mIExvbmRvbiIsCiAgICBmb3JjZSA9PSAiTWV0cm9wb2xpdGFuIFBvbGljZSIgfiAiTWV0cm9wb2xpdGFuIiwKICAgIFRSVUUgfiBmb3JjZQogICkpICU+JSAKICB3cml0ZV9jc3YoIi4uL2FuYWx5c2lzX2RhdGEvZGF0YV90cmFmZmljLmNzdiIsIG5hID0gIiIpCgpybShwZmFfY3R5X2xvb2t1cCwgcGZhX2xhZF9sb29rdXAsIHRyYWZmaWNfZGF0YV9sYSwgdHJhZmZpY19kYXRhX3BmYSkKYGBgCgoKIyBDb21iaW5pbmcgdGhlIGRhdGEKCkVhY2ggb2YgdGhlIHNlY3Rpb25zIGFib3ZlIG91dHB1dHMgYSB0aWR5IENTViBmaWxlLiBXZSBjYW4gbm93IGNvbWJpbmUgdGhlc2UgdG8KcHJvZHVjZSB0aGUgZmluYWwgZGF0YSBmaWxlIHRoYXQgd2lsbCBiZSB1c2VkIGZvciBhbmFseXNpcy4KCg==</div>
 
 
 

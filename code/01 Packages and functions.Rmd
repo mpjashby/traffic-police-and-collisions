@@ -9,8 +9,9 @@ output: html_notebook
 easily reloaded after a restart.
 
 ```{r}
-# loading tidyverse loads ggplot2, dplyr, tidyr, readr, purrr, tibble, stringr
-# and forcats
+# loading tidyverse loads ggplot2, dplyr, tidyr, readr, purrr, tibble and 
+# forcats
 library("tidyverse")
+library("stringr")
 ```
 

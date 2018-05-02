@@ -9,11 +9,18 @@ The data used in this study are from:
 
   * **collisions data** from [Road Accident and Safety Statistics Table RAS50016](https://www.gov.uk/government/statistical-data-sets/ras50-contributory-factors)
   * **police workforce data** and **police functions data** from [HMICFRS Value for Money data](https://www.justiceinspectorates.gov.uk/hmicfrs/data/value-for-money-data/)
+  * **historical police workforce data**
   * **vehicle kilometres data** from [Road Traffic Statistics Table TRA8904](https://www.gov.uk/government/statistical-data-sets/tra89-traffic-by-local-authority) 
 
 All data are available under [version 3 of the Open Government Licence](https://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/). 
 This licence explicitly allows relicensing of further-processed data under a 
 CC-BY licence.
+
+## Subsidiary data
+
+Other data needed for this project:
+
+  * [Lookup table between police-force areas and local authorities](http://geoportal.statistics.gov.uk/datasets/local-authority-district-to-community-safety-partnerships-to-police-force-areas-december-2016-lookup-in-england-and-wales)
 
 
 # Pre-processing
@@ -25,7 +32,7 @@ multi-worksheet spreadsheets into flat CSV files. All other processing (e.g.
 wide-to-long conversion) is done in this file.
 
 
-# Police functions data
+# Police workforce and functions data
 
 These data come from HMICFRS, which produces data on both police workforce and 
 officer functions. The functions data are consistent over time, whereas the 
@@ -39,8 +46,69 @@ convert the assortment of CSV, Excel and ODS files on their website to a series
 of flat CSV files. These files are not [tidy](https://cran.r-project.org/web/packages/tidyr/vignettes/tidy-data.html), 
 so some individual wrangling will be required.
 
+Some of the HMICFRS files contain many different variables, and in some cases
+the manual pre-processing has to be done for each variable. To minimise this
+work (and any consequent mistakes), the only variables that are needed are:
 
-# Police workforce data
+  * police force area population,
+  * number of police officers, and
+  * workforce by function.
+
+Passive provision should be made to include all functions, just in case they are 
+needed for calculating the number of uniformed/front-line officers. Some years 
+of data don't include the detailed functions, so only high-level functions (e.g. 
+'roads policing') need be included.
+
+HMICFRS uses data from the year prior to the report, so the data listed on their 
+website as from 2010 is actually data from 2009.
+
+```{r}
+hmic <- list()
+
+# 2010 data
+hmic[["2010"]] <- read_csv("../original_data/hmic_data_2011.csv") %>% 
+  select(force = "Police force", 
+         officers = "Home Office published data 2009-10_FTE equivalent staff_Police Officers",
+         roads_officers = "Workforce by function FTE_Police Officers (as at 31/03/2010)_Roads policing") %>% 
+  mutate(force = str_replace_all(tolower(force), " & ", " and "), year = 2010)
+
+# 2011 data
+hmic[["2011"]] <- read_csv("../original_data/hmic_data_2012.csv") %>% 
+  rename(officer_function = Function) %>% 
+  rename_all(tolower) %>% 
+  mutate(officer_function = tolower(officer_function)) %>% 
+  filter(officer_function %in% c("total road policing", "level 2 summary")) %>% 
+  gather("force", "value", -officer_function) %>% 
+  spread(officer_function, value) %>% 
+  rename(officers = `level 2 summary`, 
+         roads_officers = `total road policing`) %>% 
+  mutate(force = str_replace_all(tolower(force), " & ", " and "), year = 2011)
+
+# 2012—2016 data
+# note that the 2016 data have an asterisk after some category names, which have
+# been removed during pre-processing so that the file can be processed along
+# with the others
+hmic_list <- lapply(2012:2016, function (x) {
+  read_csv(paste0("../original_data/hmic_data_", (x + 1), ".csv")) %>% 
+    rename_all(tolower) %>% 
+    rename(poa_category = `poa category`) %>% 
+    mutate(poa_category = tolower(poa_category)) %>% 
+    filter(poa_category %in% c("total road policing", "level 2 summary")) %>%
+    gather("key", "value", -poa_category) %>%
+    spread(poa_category, value) %>%
+    rename(force = key, officers = `level 2 summary`,
+           roads_officers = `total road policing`) %>%
+    mutate(force = str_replace_all(force, " & ", " and "), year = x)
+})
+
+# merge the individual years with the combined years
+bind_rows(c(hmic, hmic_list)) %>% 
+  mutate(force = if_else(force == "metropolitan police", "metropolitan", 
+                         force)) %>% 
+  write_csv("../analysis_data/data_officer_counts.csv", na = "")
+rm(hmic, hmic_list)
+
+```
 
 
 # Historical police workforce data
@@ -56,6 +124,62 @@ Second World War.
 
 
 # Vehicle kilometres data
+
+Estimates of millions of vehicle-kilometres travelled are published for top-tier
+local authorities for each year.
+
+These estimates can be converted to police-force areas (PFAs), except that the 
+ONS lookup table for PFAs only links to local-authority districts. This is fine
+for unitary authorities, but not for two-tier areas. To get around this we can
+create a lookup using the ONS lookup file for counties and districts.
+
+```{r}
+# load traffic data
+traffic_data_la <- read_csv("../original_data/traffic_data.csv") %>% 
+  gather("year", "million_km", -`LA Code`, -`Local Authority`) %>% 
+  mutate(year = as.integer(year)) %>% 
+  # the next line corrects two problems in the traffic data file
+  mutate(
+    `LA Code` = if_else(`LA Code` == "E06000048", "E06000057", `LA Code`),
+    `LA Code` = if_else(`LA Code` == "E08000020", "E08000037", `LA Code`)
+  ) %>%
+  filter(year >= 2010)
+
+# load LAD->PFA lookup table
+pfa_lad_lookup <- read_csv("../analysis_data/lookup_pfa_to_lad.csv") %>% 
+  select(LAD16CD, force = PFA16NM) %>% 
+  mutate(force = str_replace_all(force, " & ", " and "))
+
+# create CTY->PFA lookup table
+pfa_cty_lookup <- read_csv("../analysis_data/lookup_cty_to_lad.csv") %>% 
+  left_join(pfa_lad_lookup, by = c("LAD16CD" = "LAD16CD")) %>% 
+  group_by(CTY16CD) %>%
+  summarise(force = first(force))
+
+# join PFA name to traffic data
+traffic_data_la <- traffic_data_la %>% 
+  left_join(pfa_lad_lookup, by = c("LA Code" = "LAD16CD")) %>% 
+  left_join(pfa_cty_lookup, by = c("LA Code" = "CTY16CD")) %>% 
+  mutate(force = if_else(is.na(force.x), force.y, force.x)) %>% 
+  select(-force.x, -force.y) %>% 
+  filter(!is.na(force))
+
+# sum traffic counts for PFAs
+traffic_data_pfa <- traffic_data_la %>% 
+  group_by(year, force) %>% 
+  summarise(million_km = sum(million_km))
+
+# write CSV file
+traffic_data_pfa %>% 
+  mutate(force = case_when(
+    force == "London, City of" ~ "City of London",
+    force == "Metropolitan Police" ~ "Metropolitan",
+    TRUE ~ force
+  )) %>% 
+  write_csv("../analysis_data/data_traffic.csv", na = "")
+
+rm(pfa_cty_lookup, pfa_lad_lookup, traffic_data_la, traffic_data_pfa)
+```
 
 
 # Combining the data

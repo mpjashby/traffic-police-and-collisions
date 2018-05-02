@@ -1,0 +1,302 @@
+year,force,million_km
+2010,Avon and Somerset,15588
+2010,Bedfordshire,4811
+2010,Cambridgeshire,8849
+2010,Cheshire,11722
+2010,Cleveland,4017
+2010,Cumbria,5413
+2010,Derbyshire,9231
+2010,Devon and Cornwall,14631
+2010,Dorset,5447
+2010,Durham,4583
+2010,Dyfed-Powys,5086
+2010,Essex,15744
+2010,Gloucestershire,6188
+2010,Greater Manchester,35021
+2010,Gwent,5179
+2010,Hampshire,17562
+2010,Hertfordshire,11045
+2010,Humberside,6955
+2010,Kent,15429
+2010,Lancashire,12128
+2010,Leicestershire,9227
+2010,Lincolnshire,5832
+2010,City of London,166
+2010,Merseyside,15127
+2010,Metropolitan,29538
+2010,Norfolk,8000
+2010,North Wales,6400
+2010,North Yorkshire,9036
+2010,Northamptonshire,8241
+2010,Northumbria,9595
+2010,Nottinghamshire,8323
+2010,South Wales,10311
+2010,South Yorkshire,19438
+2010,Staffordshire,10310
+2010,Suffolk,5801
+2010,Surrey,13362
+2010,Sussex,12500
+2010,Thames Valley,24052
+2010,Warwickshire,8756
+2010,West Mercia,12491
+2010,West Midlands,31699
+2010,West Yorkshire,30477
+2010,Wiltshire,7313
+2011,Avon and Somerset,15577
+2011,Bedfordshire,4813
+2011,Cambridgeshire,8885
+2011,Cheshire,11790
+2011,Cleveland,4043
+2011,Cumbria,5368
+2011,Derbyshire,9250
+2011,Devon and Cornwall,14585
+2011,Dorset,5385
+2011,Durham,4598
+2011,Dyfed-Powys,5039
+2011,Essex,15920
+2011,Gloucestershire,6185
+2011,Greater Manchester,35375
+2011,Gwent,5232
+2011,Hampshire,17599
+2011,Hertfordshire,11366
+2011,Humberside,6950
+2011,Kent,15706
+2011,Lancashire,12194
+2011,Leicestershire,9227
+2011,Lincolnshire,5830
+2011,City of London,162
+2011,Merseyside,15277
+2011,Metropolitan,28941
+2011,Norfolk,7954
+2011,North Wales,6302
+2011,North Yorkshire,9030
+2011,Northamptonshire,8116
+2011,Northumbria,9670
+2011,Nottinghamshire,8353
+2011,South Wales,10359
+2011,South Yorkshire,19518
+2011,Staffordshire,10466
+2011,Suffolk,5793
+2011,Surrey,13508
+2011,Sussex,12505
+2011,Thames Valley,23984
+2011,Warwickshire,8733
+2011,West Mercia,12541
+2011,West Midlands,32174
+2011,West Yorkshire,30684
+2011,Wiltshire,7325
+2012,Avon and Somerset,15495
+2012,Bedfordshire,4890
+2012,Cambridgeshire,8786
+2012,Cheshire,11645
+2012,Cleveland,4082
+2012,Cumbria,5388
+2012,Derbyshire,9308
+2012,Devon and Cornwall,14370
+2012,Dorset,5340
+2012,Durham,4616
+2012,Dyfed-Powys,4984
+2012,Essex,15921
+2012,Gloucestershire,6136
+2012,Greater Manchester,35268
+2012,Gwent,5168
+2012,Hampshire,17488
+2012,Hertfordshire,11509
+2012,Humberside,6930
+2012,Kent,15651
+2012,Lancashire,11963
+2012,Leicestershire,9131
+2012,Lincolnshire,5791
+2012,City of London,157
+2012,Merseyside,15149
+2012,Metropolitan,28740
+2012,Norfolk,7906
+2012,North Wales,6233
+2012,North Yorkshire,8859
+2012,Northamptonshire,8215
+2012,Northumbria,9644
+2012,Nottinghamshire,8397
+2012,South Wales,10379
+2012,South Yorkshire,19446
+2012,Staffordshire,10473
+2012,Suffolk,5788
+2012,Surrey,13469
+2012,Sussex,12394
+2012,Thames Valley,23978
+2012,Warwickshire,8867
+2012,West Mercia,12265
+2012,West Midlands,32286
+2012,West Yorkshire,30237
+2012,Wiltshire,7266
+2013,Avon and Somerset,15605
+2013,Bedfordshire,5053
+2013,Cambridgeshire,8936
+2013,Cheshire,11676
+2013,Cleveland,4032
+2013,Cumbria,5438
+2013,Derbyshire,9232
+2013,Devon and Cornwall,14461
+2013,Dorset,5381
+2013,Durham,4624
+2013,Dyfed-Powys,5101
+2013,Essex,15984
+2013,Gloucestershire,6188
+2013,Greater Manchester,35088
+2013,Gwent,5171
+2013,Hampshire,17473
+2013,Hertfordshire,11587
+2013,Humberside,6981
+2013,Kent,15544
+2013,Lancashire,12107
+2013,Leicestershire,9297
+2013,Lincolnshire,5843
+2013,City of London,156
+2013,Merseyside,15138
+2013,Metropolitan,28663
+2013,Norfolk,7961
+2013,North Wales,6314
+2013,North Yorkshire,9044
+2013,Northamptonshire,8269
+2013,Northumbria,9709
+2013,Nottinghamshire,8412
+2013,South Wales,10412
+2013,South Yorkshire,19495
+2013,Staffordshire,10415
+2013,Suffolk,5846
+2013,Surrey,13466
+2013,Sussex,12313
+2013,Thames Valley,24046
+2013,Warwickshire,8887
+2013,West Mercia,12417
+2013,West Midlands,31869
+2013,West Yorkshire,30242
+2013,Wiltshire,7291
+2014,Avon and Somerset,15951
+2014,Bedfordshire,5202
+2014,Cambridgeshire,9214
+2014,Cheshire,12090
+2014,Cleveland,4159
+2014,Cumbria,5576
+2014,Derbyshire,9351
+2014,Devon and Cornwall,14752
+2014,Dorset,5514
+2014,Durham,4734
+2014,Dyfed-Powys,5277
+2014,Essex,16580
+2014,Gloucestershire,6434
+2014,Greater Manchester,35623
+2014,Gwent,5402
+2014,Hampshire,17945
+2014,Hertfordshire,11967
+2014,Humberside,7206
+2014,Kent,15884
+2014,Lancashire,12381
+2014,Leicestershire,9554
+2014,Lincolnshire,5968
+2014,City of London,160
+2014,Merseyside,15480
+2014,Metropolitan,29175
+2014,Norfolk,8156
+2014,North Wales,6482
+2014,North Yorkshire,9272
+2014,Northamptonshire,8453
+2014,Northumbria,9883
+2014,Nottinghamshire,8640
+2014,South Wales,10731
+2014,South Yorkshire,19854
+2014,Staffordshire,10708
+2014,Suffolk,6026
+2014,Surrey,13833
+2014,Sussex,12642
+2014,Thames Valley,24656
+2014,Warwickshire,9019
+2014,West Mercia,12753
+2014,West Midlands,32967
+2014,West Yorkshire,31444
+2014,Wiltshire,7623
+2015,Avon and Somerset,16236
+2015,Bedfordshire,5371
+2015,Cambridgeshire,9503
+2015,Cheshire,12204
+2015,Cleveland,4214
+2015,Cumbria,5678
+2015,Derbyshire,9495
+2015,Devon and Cornwall,14927
+2015,Dorset,5577
+2015,Durham,4831
+2015,Dyfed-Powys,5349
+2015,Essex,16895
+2015,Gloucestershire,6550
+2015,Greater Manchester,35863
+2015,Gwent,5516
+2015,Hampshire,18360
+2015,Hertfordshire,12226
+2015,Humberside,7306
+2015,Kent,16311
+2015,Lancashire,12638
+2015,Leicestershire,9623
+2015,Lincolnshire,6103
+2015,City of London,160
+2015,Merseyside,15660
+2015,Metropolitan,29072
+2015,Norfolk,8291
+2015,North Wales,6599
+2015,North Yorkshire,9434
+2015,Northamptonshire,8641
+2015,Northumbria,9953
+2015,Nottinghamshire,8827
+2015,South Wales,10932
+2015,South Yorkshire,20250
+2015,Staffordshire,10847
+2015,Suffolk,6228
+2015,Surrey,14142
+2015,Sussex,12882
+2015,Thames Valley,25341
+2015,Warwickshire,9301
+2015,West Mercia,12948
+2015,West Midlands,33042
+2015,West Yorkshire,32039
+2015,Wiltshire,7737
+2016,Avon and Somerset,16780
+2016,Bedfordshire,5498
+2016,Cambridgeshire,9781
+2016,Cheshire,12413
+2016,Cleveland,4300
+2016,Cumbria,5839
+2016,Derbyshire,9754
+2016,Devon and Cornwall,15365
+2016,Dorset,5707
+2016,Durham,4858
+2016,Dyfed-Powys,5470
+2016,Essex,17384
+2016,Gloucestershire,6615
+2016,Greater Manchester,36273
+2016,Gwent,5629
+2016,Hampshire,18785
+2016,Hertfordshire,12489
+2016,Humberside,7457
+2016,Kent,16666
+2016,Lancashire,12731
+2016,Leicestershire,9890
+2016,Lincolnshire,6239
+2016,City of London,154
+2016,Merseyside,15952
+2016,Metropolitan,29537
+2016,Norfolk,8454
+2016,North Wales,6779
+2016,North Yorkshire,9634
+2016,Northamptonshire,8799
+2016,Northumbria,10187
+2016,Nottinghamshire,8937
+2016,South Wales,11142
+2016,South Yorkshire,20677
+2016,Staffordshire,11057
+2016,Suffolk,6420
+2016,Surrey,14319
+2016,Sussex,13247
+2016,Thames Valley,25942
+2016,Warwickshire,9488
+2016,West Mercia,13217
+2016,West Midlands,33868
+2016,West Yorkshire,33094
+2016,Wiltshire,7903
