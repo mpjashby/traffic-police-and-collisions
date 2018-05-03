@@ -10,6 +10,7 @@ The data used in this study are from:
   * **collisions data** from [Road Accident and Safety Statistics Table RAS50016](https://www.gov.uk/government/statistical-data-sets/ras50-contributory-factors)
   * **police workforce data** and **police functions data** from [HMICFRS Value for Money data](https://www.justiceinspectorates.gov.uk/hmicfrs/data/value-for-money-data/)
   * **historical police workforce data**
+  * **fixed penalty notice data** and **breath test data** from [Police powers and procedures England and Wales statistics](https://www.gov.uk/government/collections/police-powers-and-procedures-england-and-wales)
   * **vehicle kilometres data** from [Road Traffic Statistics Table TRA8904](https://www.gov.uk/government/statistical-data-sets/tra89-traffic-by-local-authority) 
 
 All data are available under [version 3 of the Open Government Licence](https://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/). 
@@ -120,6 +121,153 @@ Second World War.
 # Historical population data
 
 
+# FPN data
+
+Data on FPNs issued from 2011 onwards are available by year in the 2017 Home
+Office police powers statistics. 2010 data is available as a separate file,
+which also includes data back to 2007 (although camera FPN counts are only
+available from 2009).
+
+The notes in the 2017 FPN file state that all Suffolk FPNs are issued jointly
+with Norfolk, so these forces should be combined for analysis. A similar issue
+affects South Wales, Gwent and Dyfed-Powys, which should also be combined in the
+final analysis.
+
+First we'll deal with the 2007—2010 data file.
+
+```{r}
+fpn_data <- list()
+
+# load 2007—2010 data
+fpn_data_raw <- read_csv("../original_data/fpn_data_2007-2010.csv") %>% 
+  select(year = Year, force = `Police force`, offence = Offence, 
+         fpns = `Total FPNs`) %>% 
+  # totals in the dataset are prefixed with an *, so we can remove these rows
+  filter(!str_detect(force, "^\\*")) %>% 
+  mutate(force = harmonise_force(force))
+
+# count all FPNs
+fpn_all <- fpn_data_raw %>% 
+  group_by(year, force) %>% 
+  summarise(fpn_all = sum(fpns))
+
+# count mobile phone FPNs
+fpn_phone <- fpn_data_raw %>% 
+  filter(offence == "Use of hand-held mobile phone while driving") %>% 
+  group_by(year, force) %>% 
+  summarise(fpn_phone = sum(fpns))
+
+# count speeding FPNs
+fpn_speed <- fpn_data_raw %>% 
+  filter(offence == "Speed limit offences") %>% 
+  group_by(year, force) %>% 
+  summarise(fpn_speed = sum(fpns))
+
+# get camera offence counts
+fpn_data_camera <- read_csv("../original_data/fpn_data_2007–2010_camera.csv") %>% 
+  select(year = Year, force = `Police force`, offence = `Offence`, 
+         fpns = `Camera detected FPNS`) %>% 
+  # totals in the dataset are prefixed with an *, so we can remove these rows
+  filter(!str_detect(force, "^\\*") & year >= 2009 & 
+         offence != "Total camera detections") %>% 
+  mutate(force = harmonise_force(force)) %>%
+  spread(offence, fpns) %>%
+  rename(fpn_camera_speed = `Speed limit offences`,
+         fpn_camera_other = `Neglect of traffic directions`)
+
+# merge these datasets
+fpn_data[["2010"]] <- fpn_all %>% 
+  left_join(fpn_phone, by = c("year" = "year", "force" = "force")) %>% 
+  left_join(fpn_speed, by = c("year" = "year", "force" = "force")) %>% 
+  left_join(fpn_data_camera, by = c("year" = "year", "force" = "force"))
+
+rm(fpn_data_raw, fpn_all, fpn_phone, fpn_speed, fpn_data_camera)
+```
+
+Now we can deal with the 2011—2016 data and merge the two files.
+
+```{r}
+# load data
+fpn_data_raw <- read_csv("../original_data/fpn_data_2011–2017.csv") %>% 
+  select(year = `Calendar Year`, force = `Police Force Area`, 
+         offence = `Offence Description`, fpns = `Number of FPNs`) %>% 
+  mutate(force = harmonise_force(force))
+
+# count all FPNs
+fpn_all <- fpn_data_raw %>% 
+  group_by(year, force) %>% 
+  summarise(fpn_all = sum(fpns))
+
+# count mobile phone FPNs
+fpn_phone <- fpn_data_raw %>% 
+  filter(offence == "Use of hand-held mobile phone while driving") %>% 
+  group_by(year, force) %>% 
+  summarise(fpn_phone = sum(fpns))
+
+# count speeding FPNs
+fpn_speed <- fpn_data_raw %>% 
+  filter(offence == "Speed limit offences") %>% 
+  group_by(year, force) %>% 
+  summarise(fpn_speed = sum(fpns))
+
+# get camera offence counts
+fpn_data_camera <- read_csv("../original_data/fpn_data_2011–2017_camera.csv") %>% 
+  select(year = `Calendar Year`, force = `Police Force Area`, 
+         offence = `Offence Description`, type = `Detection type`, 
+         fpns = `Number of FPNs`) %>% 
+  mutate(force = harmonise_force(force)) %>% 
+  filter(type == "Camera-detected") %>% 
+  group_by(year, force, offence) %>% 
+  summarise(fpn_camera = sum(fpns)) %>% 
+  ungroup() %>% 
+  spread(offence, fpn_camera) %>% 
+  rename(fpn_camera_speed = `Speed limit offences`,
+         fpn_camera_other = `Neglect of traffic directions`)
+
+# merge these datasets
+fpn_data[["2016"]] <- fpn_all %>% 
+  left_join(fpn_phone, by = c("year" = "year", "force" = "force")) %>% 
+  left_join(fpn_speed, by = c("year" = "year", "force" = "force")) %>% 
+  left_join(fpn_data_camera, by = c("year" = "year", "force" = "force"))
+
+rm(fpn_data_raw, fpn_all, fpn_phone, fpn_speed, fpn_data_camera)
+
+# merge the two data files together
+bind_rows(fpn_data) %>%
+  arrange(year, force) %>%
+  filter(year >= 2009) %>% 
+  mutate(
+    fpn_camera = fpn_camera_speed + fpn_camera_other,
+    fpn_all = fpn_all - fpn_camera,
+    fpn_speed = fpn_speed - fpn_camera_speed
+  ) %>% 
+  select(-fpn_camera_other) %>% 
+  write_csv("../analysis_data/data_fpn.csv", na = "")
+
+rm(fpn_data)
+```
+
+
+# Breath test data
+
+Monthly breath test data is published by the Home Office in a single file from 
+2002 onwards. The data are in tidy format already, so they can just be
+aggregated to annual totals and outputted again.
+
+```{r}
+read_csv("../original_data/breath_test_data.csv") %>% 
+  select(year = `Calendar Year`, force = `Police Force`, 
+         breath_tests = `Number of breath tests`) %>% 
+  mutate(force = harmonise_force(force)) %>% 
+  filter(year >= 2009) %>% 
+  group_by(year, force) %>% 
+  summarise(breath_tests = sum(breath_tests)) %>% 
+  arrange(year, force) %>% 
+  write_csv("../analysis_data/data_breath_tests.csv", na = "")
+```
+
+
+
 # Collision data
 
 
@@ -143,7 +291,7 @@ traffic_data_la <- read_csv("../original_data/traffic_data.csv") %>%
     `LA Code` = if_else(`LA Code` == "E06000048", "E06000057", `LA Code`),
     `LA Code` = if_else(`LA Code` == "E08000020", "E08000037", `LA Code`)
   ) %>%
-  filter(year >= 2010)
+  filter(year >= 2009)
 
 # load LAD->PFA lookup table
 pfa_lad_lookup <- read_csv("../analysis_data/lookup_pfa_to_lad.csv") %>% 

@@ -1,0 +1,341 @@
+﻿Year,Country,Region,Police force,Offence,Total FPNS,Camera detected FPNS
+2009,England,South West,Avon and Somerset,Speed limit offences,54165,52837
+2009,England,South West,Avon and Somerset,Neglect of traffic directions,6141,4666
+2009,England,East of England,Bedfordshire,Speed limit offences,14289,13669
+2009,England,East of England,Bedfordshire,Neglect of traffic directions,1192,454
+2009,England,East of England,Cambridgeshire,Speed limit offences,14401,12173
+2009,England,East of England,Cambridgeshire,Neglect of traffic directions,1413,182
+2009,England,North West,Cheshire,Speed limit offences,21043,14711
+2009,England,North West,Cheshire,Neglect of traffic directions,4521,2608
+2009,England,North East,Cleveland,Speed limit offences,8687,6275
+2009,England,North East,Cleveland,Neglect of traffic directions,1342,0
+2009,England,North West,Cumbria,Speed limit offences,20366,18758
+2009,England,North West,Cumbria,Neglect of traffic directions,757,0
+2009,England,East Midlands,Derbyshire,Speed limit offences,10756,9232
+2009,England,East Midlands,Derbyshire,Neglect of traffic directions,1203,0
+2009,England,South West,Devon and Cornwall,Speed limit offences,39426,16777
+2009,England,South West,Devon and Cornwall,Neglect of traffic directions,7411,2788
+2009,England,South West,Dorset,Speed limit offences,23050,21458
+2009,England,South West,Dorset,Neglect of traffic directions,1011,440
+2009,England,North East,Durham,Speed limit offences,3359,2171
+2009,England,North East,Durham,Neglect of traffic directions,444,0
+2009,England,East of England,Essex,Speed limit offences,30423,22069
+2009,England,East of England,Essex,Neglect of traffic directions,6456,5251
+2009,England,South West,Gloucestershire,Speed limit offences,4339,2874
+2009,England,South West,Gloucestershire,Neglect of traffic directions,452,240
+2009,England,North West,Greater Manchester,Speed limit offences,41817,39086
+2009,England,North West,Greater Manchester,Neglect of traffic directions,16871,13524
+2009,England,South East,Hampshire,Speed limit offences,29460,23927
+2009,England,South East,Hampshire,Neglect of traffic directions,2534,796
+2009,England,East of England,Hertfordshire,Speed limit offences,29724,27914
+2009,England,East of England,Hertfordshire,Neglect of traffic directions,3309,2749
+2009,England,Yorkshire & The Humber,Humberside,Speed limit offences,24749,19421
+2009,England,Yorkshire & The Humber,Humberside,Neglect of traffic directions,3080,101
+2009,England,South East,Kent,Speed limit offences,25868,20271
+2009,England,South East,Kent,Neglect of traffic directions,1749,0
+2009,England,North West,Lancashire,Speed limit offences,34710,30265
+2009,England,North West,Lancashire,Neglect of traffic directions,1552,0
+2009,England,East Midlands,Leicestershire,Speed limit offences,12899,11037
+2009,England,East Midlands,Leicestershire,Neglect of traffic directions,5114,3674
+2009,England,East Midlands,Lincolnshire,Speed limit offences,18619,15863
+2009,England,East Midlands,Lincolnshire,Neglect of traffic directions,1245,0
+2009,England,London,"London, City of",Speed limit offences,1590,1443
+2009,England,London,"London, City of",Neglect of traffic directions,1526,1380
+2009,England,North West,Merseyside,Speed limit offences,34983,24523
+2009,England,North West,Merseyside,Neglect of traffic directions,10036,340
+2009,England,London,Metropolitan Police,Speed limit offences,44197,40594
+2009,England,London,Metropolitan Police,Neglect of traffic directions,22201,13454
+2009,England,East of England,Norfolk,Speed limit offences,16692,11782
+2009,England,East of England,Norfolk,Neglect of traffic directions,1025,35
+2009,England,East Midlands,Northamptonshire,Speed limit offences,11585,10472
+2009,England,East Midlands,Northamptonshire,Neglect of traffic directions,2589,1869
+2009,England,North East,Northumbria,Speed limit offences,22345,20419
+2009,England,North East,Northumbria,Neglect of traffic directions,2699,695
+2009,England,Yorkshire & The Humber,North Yorkshire,Speed limit offences,8425,740
+2009,England,Yorkshire & The Humber,North Yorkshire,Neglect of traffic directions,1162,0
+2009,England,East Midlands,Nottinghamshire,Speed limit offences,30906,30005
+2009,England,East Midlands,Nottinghamshire,Neglect of traffic directions,9451,8043
+2009,England,Yorkshire & The Humber,South Yorkshire,Speed limit offences,10526,6978
+2009,England,Yorkshire & The Humber,South Yorkshire,Neglect of traffic directions,4617,2160
+2009,England,West Midlands,Staffordshire,Speed limit offences,42055,20049
+2009,England,West Midlands,Staffordshire,Neglect of traffic directions,1110,236
+2009,England,East of England,Suffolk,Speed limit offences,35027,30101
+2009,England,East of England,Suffolk,Neglect of traffic directions,1546,0
+2009,England,South East,Surrey,Speed limit offences,26401,24943
+2009,England,South East,Surrey,Neglect of traffic directions,4447,3573
+2009,England,South East,Sussex,Speed limit offences,29710,24489
+2009,England,South East,Sussex,Neglect of traffic directions,4041,3027
+2009,England,South East,Thames Valley,Speed limit offences,57781,49406
+2009,England,South East,Thames Valley,Neglect of traffic directions,1771,976
+2009,England,West Midlands,Warwickshire,Speed limit offences,32213,29811
+2009,England,West Midlands,Warwickshire,Neglect of traffic directions,1964,1601
+2009,England,West Midlands,West Mercia,Speed limit offences,39871,35851
+2009,England,West Midlands,West Mercia,Neglect of traffic directions,1742,777
+2009,England,West Midlands,West Midlands,Speed limit offences,40789,34309
+2009,England,West Midlands,West Midlands,Neglect of traffic directions,11953,7445
+2009,England,Yorkshire & The Humber,West Yorkshire,Speed limit offences,23612,15929
+2009,England,Yorkshire & The Humber,West Yorkshire,Neglect of traffic directions,7115,3018
+2009,England,South West,Wiltshire,Speed limit offences,27345,24647
+2009,England,South West,Wiltshire,Neglect of traffic directions,1935,1222
+2009,Wales,Wales,Dyfed-Powys,Speed limit offences,10758,8015
+2009,Wales,Wales,Dyfed-Powys,Neglect of traffic directions,821,0
+2009,Wales,Wales,Gwent,Speed limit offences,14625,14090
+2009,Wales,Wales,Gwent,Neglect of traffic directions,1444,706
+2009,Wales,Wales,North Wales,Speed limit offences,27648,21382
+2009,Wales,Wales,North Wales,Neglect of traffic directions,726,0
+2009,Wales,Wales,South Wales,Speed limit offences,26254,23983
+2009,Wales,Wales,South Wales,Neglect of traffic directions,4284,2711
+2010,England,South West,Avon and Somerset,Speed limit offences,58842,57466
+2010,England,South West,Avon and Somerset,Neglect of traffic directions,3928,2516
+2010,England,East of England,Bedfordshire,Speed limit offences,10654,9405
+2010,England,East of England,Bedfordshire,Neglect of traffic directions,1746,1334
+2010,England,East of England,Cambridgeshire,Speed limit offences,14094,12120
+2010,England,East of England,Cambridgeshire,Neglect of traffic directions,1257,100
+2010,England,North West,Cheshire,Speed limit offences,17549,13220
+2010,England,North West,Cheshire,Neglect of traffic directions,4296,2614
+2010,England,North East,Cleveland,Speed limit offences,8646,6103
+2010,England,North East,Cleveland,Neglect of traffic directions,1218,0
+2010,England,North West,Cumbria,Speed limit offences,17715,16584
+2010,England,North West,Cumbria,Neglect of traffic directions,778,0
+2010,England,East Midlands,Derbyshire,Speed limit offences,6356,5402
+2010,England,East Midlands,Derbyshire,Neglect of traffic directions,1015,0
+2010,England,South West,Devon and Cornwall,Speed limit offences,35097,15436
+2010,England,South West,Devon and Cornwall,Neglect of traffic directions,7100,2607
+2010,England,South West,Dorset,Speed limit offences,36622,32265
+2010,England,South West,Dorset,Neglect of traffic directions,771,324
+2010,England,North East,Durham,Speed limit offences,3977,2957
+2010,England,North East,Durham,Neglect of traffic directions,312,0
+2010,England,East of England,Essex,Speed limit offences,43620,17926
+2010,England,East of England,Essex,Neglect of traffic directions,5344,2317
+2010,England,South West,Gloucestershire,Speed limit offences,5964,4325
+2010,England,South West,Gloucestershire,Neglect of traffic directions,730,394
+2010,England,North West,Greater Manchester,Speed limit offences,43292,41675
+2010,England,North West,Greater Manchester,Neglect of traffic directions,7713,5325
+2010,England,South East,Hampshire,Speed limit offences,30319,24143
+2010,England,South East,Hampshire,Neglect of traffic directions,2842,956
+2010,England,East of England,Hertfordshire,Speed limit offences,28061,26358
+2010,England,East of England,Hertfordshire,Neglect of traffic directions,3786,3249
+2010,England,Yorkshire & The Humber,Humberside,Speed limit offences,22237,18298
+2010,England,Yorkshire & The Humber,Humberside,Neglect of traffic directions,2131,75
+2010,England,South East,Kent,Speed limit offences,22873,15828
+2010,England,South East,Kent,Neglect of traffic directions,1645,0
+2010,England,North West,Lancashire,Speed limit offences,24743,21577
+2010,England,North West,Lancashire,Neglect of traffic directions,1769,0
+2010,England,East Midlands,Leicestershire,Speed limit offences,15111,13306
+2010,England,East Midlands,Leicestershire,Neglect of traffic directions,6238,4333
+2010,England,East Midlands,Lincolnshire,Speed limit offences,18698,16303
+2010,England,East Midlands,Lincolnshire,Neglect of traffic directions,1014,0
+2010,England,London,"London, City of",Speed limit offences,2188,1892
+2010,England,London,"London, City of",Neglect of traffic directions,1335,1221
+2010,England,North West,Merseyside,Speed limit offences,29471,19715
+2010,England,North West,Merseyside,Neglect of traffic directions,6100,323
+2010,England,London,Metropolitan Police,Speed limit offences,24088,20423
+2010,England,London,Metropolitan Police,Neglect of traffic directions,22796,7567
+2010,England,East of England,Norfolk,Speed limit offences,17878,12434
+2010,England,East of England,Norfolk,Neglect of traffic directions,1322,50
+2010,England,East Midlands,Northamptonshire,Speed limit offences,9120,8237
+2010,England,East Midlands,Northamptonshire,Neglect of traffic directions,2322,1713
+2010,England,North East,Northumbria,Speed limit offences,19424,18488
+2010,England,North East,Northumbria,Neglect of traffic directions,4140,1549
+2010,England,Yorkshire & The Humber,North Yorkshire,Speed limit offences,14310,5465
+2010,England,Yorkshire & The Humber,North Yorkshire,Neglect of traffic directions,1639,0
+2010,England,East Midlands,Nottinghamshire,Speed limit offences,17795,16614
+2010,England,East Midlands,Nottinghamshire,Neglect of traffic directions,9070,8006
+2010,England,Yorkshire & The Humber,South Yorkshire,Speed limit offences,14871,10900
+2010,England,Yorkshire & The Humber,South Yorkshire,Neglect of traffic directions,4512,2360
+2010,England,West Midlands,Staffordshire,Speed limit offences,40719,19726
+2010,England,West Midlands,Staffordshire,Neglect of traffic directions,1577,471
+2010,England,East of England,Suffolk,Speed limit offences,23263,19685
+2010,England,East of England,Suffolk,Neglect of traffic directions,1184,0
+2010,England,South East,Surrey,Speed limit offences,22941,20767
+2010,England,South East,Surrey,Neglect of traffic directions,4581,3732
+2010,England,South East,Sussex,Speed limit offences,30398,24088
+2010,England,South East,Sussex,Neglect of traffic directions,4682,3561
+2010,England,South East,Thames Valley,Speed limit offences,52104,39431
+2010,England,South East,Thames Valley,Neglect of traffic directions,2073,1005
+2010,England,West Midlands,Warwickshire,Speed limit offences,19897,17792
+2010,England,West Midlands,Warwickshire,Neglect of traffic directions,2555,2285
+2010,England,West Midlands,West Mercia,Speed limit offences,31712,28324
+2010,England,West Midlands,West Mercia,Neglect of traffic directions,1333,485
+2010,England,West Midlands,West Midlands,Speed limit offences,32906,29586
+2010,England,West Midlands,West Midlands,Neglect of traffic directions,6798,3332
+2010,England,Yorkshire & The Humber,West Yorkshire,Speed limit offences,25007,19126
+2010,England,Yorkshire & The Humber,West Yorkshire,Neglect of traffic directions,6901,3169
+2010,England,South West,Wiltshire,Speed limit offences,25888,20932
+2010,England,South West,Wiltshire,Neglect of traffic directions,1464,274
+2010,Wales,Wales,Dyfed-Powys,Speed limit offences,10989,7367
+2010,Wales,Wales,Dyfed-Powys,Neglect of traffic directions,977,0
+2010,Wales,Wales,Gwent,Speed limit offences,13021,12518
+2010,Wales,Wales,Gwent,Neglect of traffic directions,1213,610
+2010,Wales,Wales,North Wales,Speed limit offences,21282,18279
+2010,Wales,Wales,North Wales,Neglect of traffic directions,597,0
+2010,Wales,Wales,South Wales,Speed limit offences,23002,21180
+2010,Wales,Wales,South Wales,Neglect of traffic directions,3375,2401
+2009,England,East Midlands,Derbyshire,Total camera detections,11959,9232
+2009,England,East Midlands,Leicestershire,Total camera detections,18013,14711
+2009,England,East Midlands,Lincolnshire,Total camera detections,19864,15863
+2009,England,East Midlands,Northamptonshire,Total camera detections,14174,12341
+2009,England,East Midlands,Nottinghamshire,Total camera detections,40357,38048
+2009,England,East Midlands Total,* Region Total,Total camera detections,104367,90195
+2009,England,East of England,Bedfordshire,Total camera detections,15481,14123
+2009,England,East of England,Cambridgeshire,Total camera detections,15814,12355
+2009,England,East of England,Essex,Total camera detections,36879,27320
+2009,England,East of England,Hertfordshire,Total camera detections,33033,30663
+2009,England,East of England,Norfolk,Total camera detections,17717,11817
+2009,England,East of England,Suffolk,Total camera detections,36573,30101
+2009,England,East of England Total,* Region Total,Total camera detections,155497,126379
+2009,England,London,"London, City of",Total camera detections,3116,2823
+2009,England,London,Metropolitan Police,Total camera detections,66398,54048
+2009,England,London Total,* Region Total,Total camera detections,69514,56871
+2009,England,North East,Cleveland,Total camera detections,10029,6275
+2009,England,North East,Durham,Total camera detections,3803,2171
+2009,England,North East,Northumbria,Total camera detections,25044,21114
+2009,England,North East Total,* Region Total,Total camera detections,38876,29560
+2009,England,North West,Cheshire,Total camera detections,25564,17319
+2009,England,North West,Cumbria,Total camera detections,21123,18758
+2009,England,North West,Greater Manchester,Total camera detections,58688,52610
+2009,England,North West,Lancashire,Total camera detections,36262,30265
+2009,England,North West,Merseyside,Total camera detections,45019,24863
+2009,England,North West Total,* Region Total,Total camera detections,186656,143815
+2009,England,South East,Hampshire,Total camera detections,31994,24723
+2009,England,South East,Kent,Total camera detections,27617,20271
+2009,England,South East,Surrey,Total camera detections,30848,28516
+2009,England,South East,Sussex,Total camera detections,33751,27516
+2009,England,South East,Thames Valley,Total camera detections,59552,50382
+2009,England,South East Total,* Region Total,Total camera detections,183762,151408
+2009,England,South West,Avon and Somerset,Total camera detections,60306,57503
+2009,England,South West,Devon and Cornwall,Total camera detections,46837,19565
+2009,England,South West,Dorset,Total camera detections,24061,21898
+2009,England,South West,Gloucestershire,Total camera detections,4791,3114
+2009,England,South West,Wiltshire,Total camera detections,29280,25869
+2009,England,South West Total,* Region Total,Total camera detections,165275,127949
+2009,England,West Midlands,Staffordshire,Total camera detections,43165,20285
+2009,England,West Midlands,Warwickshire,Total camera detections,34177,31412
+2009,England,West Midlands,West Mercia,Total camera detections,41613,36628
+2009,England,West Midlands,West Midlands,Total camera detections,52742,41754
+2009,England,West Midlands Total,* Region Total,Total camera detections,171697,130079
+2009,England,Yorkshire & The Humber,Humberside,Total camera detections,27829,19522
+2009,England,Yorkshire & The Humber,North Yorkshire,Total camera detections,9587,740
+2009,England,Yorkshire & The Humber,South Yorkshire,Total camera detections,15143,9138
+2009,England,Yorkshire & The Humber,West Yorkshire,Total camera detections,30727,18947
+2009,England,Yorkshire & The Humber Total,* Region Total,Total camera detections,83286,48347
+2009,England Total,* Country Total,* Country Total,Total camera detections,1158930,904603
+2009,Wales,Wales,Dyfed-Powys,Total camera detections,11579,8015
+2009,Wales,Wales,Gwent,Total camera detections,16069,14796
+2009,Wales,Wales,North Wales,Total camera detections,28374,21382
+2009,Wales,Wales,South Wales,Total camera detections,30538,26694
+2009,Wales,Wales Total,* Region Total,Total camera detections,86560,70887
+2009,England and Wales Total,*E&W Total,*E&W Total,Total camera detections,1245490,975490
+2009,England,East Midlands,* Region Total,Neglect of traffic directions,19602,13586
+2009,England,East Midlands,* Region Total,Speed limit offences,84765,76609
+2009,England,East of England,* Region Total,Neglect of traffic directions,14941,8671
+2009,England,East of England,* Region Total,Speed limit offences,140556,117708
+2009,England,London,* Region Total,Neglect of traffic directions,23727,14834
+2009,England,London,* Region Total,Speed limit offences,45787,42037
+2009,England,North East,* Region Total,Neglect of traffic directions,4485,695
+2009,England,North East,* Region Total,Speed limit offences,34391,28865
+2009,England,North West,* Region Total,Neglect of traffic directions,33737,16472
+2009,England,North West,* Region Total,Speed limit offences,152919,127343
+2009,England,South East,* Region Total,Neglect of traffic directions,14542,8372
+2009,England,South East,* Region Total,Speed limit offences,169220,143036
+2009,England,South West,* Region Total,Neglect of traffic directions,16950,9356
+2009,England,South West,* Region Total,Speed limit offences,148325,118593
+2009,Wales,Wales,* Region Total,Neglect of traffic directions,7275,3417
+2009,Wales,Wales,* Region Total,Speed limit offences,79285,67470
+2009,England,West Midlands,* Region Total,Neglect of traffic directions,16769,10059
+2009,England,West Midlands,* Region Total,Speed limit offences,154928,120020
+2009,England,Yorkshire & The Humber,* Region Total,Neglect of traffic directions,15974,5279
+2009,England,Yorkshire & The Humber,* Region Total,Speed limit offences,67312,43068
+2009,England Total,* Country Total,* Country Total,Neglect of traffic directions,160727,87324
+2009,England Total,* Country Total,* Country Total,Speed limit offences,998203,817279
+2009,Wales Total,* Country Total,* Country Total,Neglect of traffic directions,7275,3417
+2009,Wales Total,* Country Total,* Country Total,Speed limit offences,79285,67470
+2010,England,East Midlands,Derbyshire,Total camera detections,7371,5402
+2010,England,East Midlands,Leicestershire,Total camera detections,21349,17639
+2010,England,East Midlands,Lincolnshire,Total camera detections,19712,16303
+2010,England,East Midlands,Northamptonshire,Total camera detections,11442,9950
+2010,England,East Midlands,Nottinghamshire,Total camera detections,26865,24620
+2010,England,East Midlands Total,* Region Total,Total camera detections,86739,73914
+2010,England,East of England,Bedfordshire,Total camera detections,12400,10739
+2010,England,East of England,Cambridgeshire,Total camera detections,15351,12220
+2010,England,East of England,Essex,Total camera detections,48964,20243
+2010,England,East of England,Hertfordshire,Total camera detections,31847,29607
+2010,England,East of England,Norfolk,Total camera detections,19200,12484
+2010,England,East of England,Suffolk,Total camera detections,24447,19685
+2010,England,East of England Total,* Region Total,Total camera detections,152209,104978
+2010,England,London,"London, City of",Total camera detections,3523,3113
+2010,England,London,Metropolitan Police,Total camera detections,46884,27990
+2010,England,London Total,* Region Total,Total camera detections,50407,31103
+2010,England,North East,Cleveland,Total camera detections,9864,6103
+2010,England,North East,Durham,Total camera detections,4289,2957
+2010,England,North East,Northumbria,Total camera detections,23564,20037
+2010,England,North East Total,* Region Total,Total camera detections,37717,29097
+2010,England,North West,Cheshire,Total camera detections,21845,15834
+2010,England,North West,Cumbria,Total camera detections,18493,16584
+2010,England,North West,Greater Manchester,Total camera detections,51005,47000
+2010,England,North West,Lancashire,Total camera detections,26512,21577
+2010,England,North West,Merseyside,Total camera detections,35571,20038
+2010,England,North West Total,* Region Total,Total camera detections,153426,121033
+2010,England,South East,Hampshire,Total camera detections,33161,25099
+2010,England,South East,Kent,Total camera detections,24518,15828
+2010,England,South East,Surrey,Total camera detections,27522,24499
+2010,England,South East,Sussex,Total camera detections,35080,27649
+2010,England,South East,Thames Valley,Total camera detections,54177,40436
+2010,England,South East Total,* Region Total,Total camera detections,174458,133511
+2010,England,South West,Avon and Somerset,Total camera detections,62770,59982
+2010,England,South West,Devon and Cornwall,Total camera detections,42197,18043
+2010,England,South West,Dorset,Total camera detections,37393,32589
+2010,England,South West,Gloucestershire,Total camera detections,6694,4719
+2010,England,South West,Wiltshire,Total camera detections,27352,21206
+2010,England,South West Total,* Region Total,Total camera detections,176406,136539
+2010,England,West Midlands,Staffordshire,Total camera detections,42296,20197
+2010,England,West Midlands,Warwickshire,Total camera detections,22452,20077
+2010,England,West Midlands,West Mercia,Total camera detections,33045,28809
+2010,England,West Midlands,West Midlands,Total camera detections,39704,32918
+2010,England,West Midlands Total,* Region Total,Total camera detections,137497,102001
+2010,England,Yorkshire & The Humber,Humberside,Total camera detections,24368,18373
+2010,England,Yorkshire & The Humber,North Yorkshire,Total camera detections,15949,5465
+2010,England,Yorkshire & The Humber,South Yorkshire,Total camera detections,19383,13260
+2010,England,Yorkshire & The Humber,West Yorkshire,Total camera detections,31908,22295
+2010,England,Yorkshire & The Humber Total,* Region Total,Total camera detections,91608,59393
+2010,England Total,* Country Total,* Country Total,Total camera detections,1060467,791569
+2010,Wales,Wales,Dyfed-Powys,Total camera detections,11966,7367
+2010,Wales,Wales,Gwent,Total camera detections,14234,13128
+2010,Wales,Wales,North Wales,Total camera detections,21879,18279
+2010,Wales,Wales,South Wales,Total camera detections,26377,23581
+2010,Wales,Wales Total,* Region Total,Total camera detections,74456,62355
+2010,England and Wales Total,*E&W Total,*E&W Total,Total camera detections,1134923,853924
+2010,England,East Midlands,* Region Total,Neglect of traffic directions,19659,14052
+2010,England,East Midlands,* Region Total,Speed limit offences,67080,59862
+2010,England,East of England,* Region Total,Neglect of traffic directions,14639,7050
+2010,England,East of England,* Region Total,Speed limit offences,137570,97928
+2010,England,London,* Region Total,Neglect of traffic directions,24131,8788
+2010,England,London,* Region Total,Speed limit offences,26276,22315
+2010,England,North East,* Region Total,Neglect of traffic directions,5670,1549
+2010,England,North East,* Region Total,Speed limit offences,32047,27548
+2010,England,North West,* Region Total,Neglect of traffic directions,20656,8262
+2010,England,North West,* Region Total,Speed limit offences,132770,112771
+2010,England,South East,* Region Total,Neglect of traffic directions,15823,9254
+2010,England,South East,* Region Total,Speed limit offences,158635,124257
+2010,England,South West,* Region Total,Neglect of traffic directions,13993,6115
+2010,England,South West,* Region Total,Speed limit offences,162413,130424
+2010,Wales,Wales,* Region Total,Neglect of traffic directions,6162,3011
+2010,Wales,Wales,* Region Total,Speed limit offences,68294,59344
+2010,England,West Midlands,* Region Total,Neglect of traffic directions,12263,6573
+2010,England,West Midlands,* Region Total,Speed limit offences,125234,95428
+2010,England,Yorkshire & The Humber,* Region Total,Neglect of traffic directions,15183,5604
+2010,England,Yorkshire & The Humber,* Region Total,Speed limit offences,76425,53789
+2010,England Total,* Country Total,* Country Total,Neglect of traffic directions,142017,67247
+2010,England Total,* Country Total,* Country Total,Speed limit offences,918450,724322
+2010,Wales Total,* Country Total,* Country Total,Neglect of traffic directions,6162,3011
+2010,Wales Total,* Country Total,* Country Total,Speed limit offences,68294,59344
+2007,England and Wales Total,*E&W Total,*E&W Total,Speed limit offences,1464035,1296137
+2007,England and Wales Total,*E&W Total,*E&W Total,Neglect of traffic directions,188054,109427
+2007,England and Wales Total,*E&W Total,*E&W Total,Total camera detections,1652089,1405564
+2008,England and Wales Total,*E&W Total,*E&W Total,Speed limit offences,1228018,1047523
+2008,England and Wales Total,*E&W Total,*E&W Total,Neglect of traffic directions,183977,99672
+2008,England and Wales Total,*E&W Total,*E&W Total,Total camera detections,1411995,1147195
+2009,England and Wales Total,*E&W Total,*E&W Total,Neglect of traffic directions,168002,90741
+2009,England and Wales Total,*E&W Total,*E&W Total,Speed limit offences,1077488,884749
+2010,England and Wales Total,*E&W Total,*E&W Total,Neglect of traffic directions,148179,70258
+2010,England and Wales Total,*E&W Total,*E&W Total,Speed limit offences,986744,783666

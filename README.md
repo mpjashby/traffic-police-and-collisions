@@ -9,7 +9,7 @@ frequency of RTCs in England and Wales and:
   * the number of police officers,
   * the proportion of those officers allocated primarily to traffic duties, and
   * the traffic-related enforcement carried out by those officers, particularly 
-    'fatal four' enforcement.
+    'fatal four' enforcement (speed, mobile phones, drink-drive and seatbelts).
 
 To do that it will be necessary to control for:
 

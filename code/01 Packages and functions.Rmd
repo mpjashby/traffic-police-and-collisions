@@ -9,9 +9,24 @@ output: html_notebook
 easily reloaded after a restart.
 
 ```{r}
-# loading tidyverse loads ggplot2, dplyr, tidyr, readr, purrr, tibble and 
-# forcats
+# loading tidyverse loads ggplot2, dplyr, tidyr, readr, purrr, tibble, stringr 
+# and forcats
 library("tidyverse")
-library("stringr")
+```
+
+# Functions
+
+## Harmonise police force name
+
+```{r}
+harmonise_force <- function (force_name) {
+  force_name %>% 
+    str_replace_all(" & ", " and ") %>% 
+    str_to_title() %>% 
+    str_replace_all("And", "and") %>% 
+    str_replace_all("Of", "of") %>% 
+    str_replace("London, City of", "City of London") %>% 
+    str_replace("Police", "")
+}
 ```
 
