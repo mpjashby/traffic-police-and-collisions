@@ -8,6 +8,7 @@ output: html_notebook
 The data used in this study are from:
 
   * **collisions data** from [Road Accident and Safety Statistics Table RAS50016](https://www.gov.uk/government/statistical-data-sets/ras50-contributory-factors)
+    and (for 2010 and 2011) from the [National Archives](http://webarchive.nationalarchives.gov.uk/20131210232105/https://www.gov.uk/government/statistical-data-sets/ras50-contributory-factors)
   * **police workforce data** and **police functions data** from [HMICFRS Value for Money data](https://www.justiceinspectorates.gov.uk/hmicfrs/data/value-for-money-data/)
   * **historical police workforce data**
   * **fixed penalty notice data** and **breath test data** from [Police powers and procedures England and Wales statistics](https://www.gov.uk/government/collections/police-powers-and-procedures-england-and-wales)
@@ -71,7 +72,7 @@ hmic[["2010"]] <- read_csv("../original_data/hmic_data_2011.csv") %>%
   select(force = "Police force", 
          officers = "Home Office published data 2009-10_FTE equivalent staff_Police Officers",
          roads_officers = "Workforce by function FTE_Police Officers (as at 31/03/2010)_Roads policing") %>% 
-  mutate(force = str_replace_all(tolower(force), " & ", " and "), year = 2010)
+  mutate(force = harmonise_force(force), year = 2010)
 
 # 2011 data
 hmic[["2011"]] <- read_csv("../original_data/hmic_data_2012.csv") %>% 
@@ -83,7 +84,7 @@ hmic[["2011"]] <- read_csv("../original_data/hmic_data_2012.csv") %>%
   spread(officer_function, value) %>% 
   rename(officers = `level 2 summary`, 
          roads_officers = `total road policing`) %>% 
-  mutate(force = str_replace_all(tolower(force), " & ", " and "), year = 2011)
+  mutate(force = harmonise_force(force), year = 2011)
 
 # 2012—2016 data
 # note that the 2016 data have an asterisk after some category names, which have
@@ -99,13 +100,11 @@ hmic_list <- lapply(2012:2016, function (x) {
     spread(poa_category, value) %>%
     rename(force = key, officers = `level 2 summary`,
            roads_officers = `total road policing`) %>%
-    mutate(force = str_replace_all(force, " & ", " and "), year = x)
+    mutate(force = harmonise_force(force), year = x)
 })
 
 # merge the individual years with the combined years
 bind_rows(c(hmic, hmic_list)) %>% 
-  mutate(force = if_else(force == "metropolitan police", "metropolitan", 
-                         force)) %>% 
   write_csv("../analysis_data/data_officer_counts.csv", na = "")
 rm(hmic, hmic_list)
 
@@ -148,6 +147,7 @@ fpn_data_raw <- read_csv("../original_data/fpn_data_2007-2010.csv") %>%
 
 # count all FPNs
 fpn_all <- fpn_data_raw %>% 
+  filter(offence == "*All offences") %>% 
   group_by(year, force) %>% 
   summarise(fpn_all = sum(fpns))
 
@@ -190,7 +190,9 @@ Now we can deal with the 2011—2016 data and merge the two files.
 # load data
 fpn_data_raw <- read_csv("../original_data/fpn_data_2011–2017.csv") %>% 
   select(year = `Calendar Year`, force = `Police Force Area`, 
-         offence = `Offence Description`, fpns = `Number of FPNs`) %>% 
+         offence = `Offence Description`, outcome = Outcome, 
+         fpns = `Number of FPNs`) %>% 
+  filter(outcome != "Cancelled") %>% 
   mutate(force = harmonise_force(force))
 
 # count all FPNs
@@ -235,13 +237,16 @@ rm(fpn_data_raw, fpn_all, fpn_phone, fpn_speed, fpn_data_camera)
 # merge the two data files together
 bind_rows(fpn_data) %>%
   arrange(year, force) %>%
-  filter(year >= 2009) %>% 
+  filter(
+    year >= 2009 & 
+    !force %in% c("Dyfed-Powys", "Gwent", "North Wales", "South Wales")
+  ) %>% 
   mutate(
     fpn_camera = fpn_camera_speed + fpn_camera_other,
     fpn_all = fpn_all - fpn_camera,
     fpn_speed = fpn_speed - fpn_camera_speed
-  ) %>% 
-  select(-fpn_camera_other) %>% 
+  ) %>%
+  select(-fpn_camera_other) %>%
   write_csv("../analysis_data/data_fpn.csv", na = "")
 
 rm(fpn_data)
@@ -267,8 +272,103 @@ read_csv("../original_data/breath_test_data.csv") %>%
 ```
 
 
-
 # Collision data
+
+Collision data from 2010 onwards are available from the gov.uk website as annual
+counts at top-tier local-authority level. We will need to aggregate these to PFA 
+level. *Collision counts are available only for England and Wales.*
+
+These estimates can be converted to police-force areas (PFAs), except that the 
+ONS lookup table for PFAs only links to local-authority districts. This is fine
+for unitary authorities, but not for two-tier areas. To get around this we can
+create a lookup using the ONS lookup file for counties and districts.
+
+## Counts of collisions
+
+The collision counts have multiple header rows that have been merged during
+pre-processing. "London Airport (Heathrow)" is listed as a separate local
+authority without an ONS code, so during pre-processing it has been given the
+local authority code for Hounslow (E09000018).
+
+```{r}
+# load LAD->PFA lookup table
+pfa_lad_lookup <- read_csv("../analysis_data/lookup_pfa_to_lad.csv") %>% 
+  select(LAD16CD, force = PFA16NM) %>% 
+  mutate(force = str_replace_all(force, " & ", " and "))
+
+# create CTY->PFA lookup table
+pfa_cty_lookup <- read_csv("../analysis_data/lookup_cty_to_lad.csv") %>% 
+  left_join(pfa_lad_lookup, by = c("LAD16CD" = "LAD16CD")) %>% 
+  group_by(CTY16CD) %>%
+  summarise(force = first(force))
+
+# load and process collision counts
+collision_counts <- lapply(2010:2016, function (x) {
+  read_csv(paste0("../original_data/collision_counts_", x, ".csv")) %>% 
+    select(la_code = `ONS Code`, acc_killed = `Fatal`, acc_serious = `Serious`,
+           acc_all = `All`) %>% 
+    mutate(
+      acc_ksi = acc_killed + acc_serious,
+      la_code = if_else(la_code == "E06000048", "E06000057", la_code),
+      la_code = if_else(la_code == "E08000020", "E08000037", la_code),
+      year = x
+    ) %>% 
+    select(-acc_killed, -acc_serious) %>% 
+    left_join(pfa_lad_lookup, by = c("la_code" = "LAD16CD")) %>% 
+    left_join(pfa_cty_lookup, by = c("la_code" = "CTY16CD")) %>% 
+    mutate(force = if_else(is.na(force.x), force.y, force.x)) %>% 
+    filter(!is.na(force)) %>% 
+    group_by(year, force) %>% 
+    summarise(acc_all = sum(acc_all), acc_ksi = sum(acc_ksi))
+}) %>% bind_rows() %>% 
+  mutate(force = harmonise_force(force))
+```
+
+
+## Collision data by contributory factors
+
+For some years, some of the variable names have numbers at the end to indicate
+footnotes. These have been removed during pre-processing.
+
+```{r}
+# load and process the collisions data files
+collision_factor_data <- lapply(2010:2016, function (x) {
+  read_csv(paste0("../original_data/collisions_data_", x, ".csv")) %>% 
+    select(la_code = `ONS Code`,
+           acc_speeding = `Exceeding speed limit`, 
+           acc_drink = `Driver/Rider impaired by alcohol`, 
+           acc_phone = `Driver using mobile phone`) %>% 
+    mutate(
+      la_code = if_else(la_code == "E06000048", "E06000057", la_code),
+      la_code = if_else(la_code == "E08000020", "E08000037", la_code)
+    ) %>%
+    mutate(year = x) %>% 
+    left_join(pfa_lad_lookup, by = c("la_code" = "LAD16CD")) %>% 
+    left_join(pfa_cty_lookup, by = c("la_code" = "CTY16CD")) %>% 
+    mutate(force = if_else(is.na(force.x), force.y, force.x)) %>% 
+    filter(!is.na(force)) %>% 
+    group_by(year, force) %>% 
+    summarise(acc_speeding = sum(acc_speeding), acc_drink = sum(acc_drink),
+              acc_phone = sum(acc_phone))
+}) %>% bind_rows() %>% 
+  mutate(force = harmonise_force(force))
+```
+
+## Combining collision datasets
+
+The Collision counts data only covers police forces in England, while the
+contributory-factor data covers England and Wales. By using a left join, data
+from Wales will be discarded.
+
+```{r}
+collision_counts %>% 
+  left_join(collision_factor_data, 
+            by = c("year" = "year", "force" = "force")) %>% 
+  write_csv("../analysis_data/data_collisions.csv", na = "")
+
+rm(collision_counts, collision_factor_data, pfa_cty_lookup, pfa_lad_lookup)
+```
+
 
 
 # Vehicle kilometres data
@@ -276,10 +376,8 @@ read_csv("../original_data/breath_test_data.csv") %>%
 Estimates of millions of vehicle-kilometres travelled are published for top-tier
 local authorities for each year.
 
-These estimates can be converted to police-force areas (PFAs), except that the 
-ONS lookup table for PFAs only links to local-authority districts. This is fine
-for unitary authorities, but not for two-tier areas. To get around this we can
-create a lookup using the ONS lookup file for counties and districts.
+As with the collision data, we will need to create a CTY->LAD lookup to go with
+the existing ONS LAD->PFA lookup table.
 
 ```{r}
 # load traffic data
@@ -333,5 +431,24 @@ rm(pfa_cty_lookup, pfa_lad_lookup, traffic_data_la, traffic_data_pfa)
 # Combining the data
 
 Each of the sections above outputs a tidy CSV file. We can now combine these to
-produce the final data file that will be used for analysis.
+produce the final data file that will be used for analysis. At the same time we
+can remove the Welsh forces (for which we don't have accident counts) and merge
+Norfolk and Suffolk (since they have a single Central Ticket Office).
+
+```{r}
+dir("../analysis_data/", pattern = "data_*", full.names = TRUE) %>% 
+  map(read_csv) %>% 
+  plyr::join_all(by = c("year", "force"), type = "left") %>% 
+  filter(
+    year >= 2010 &
+    !force %in% c("Dyfed-Powys", "Gwent", "North Wales", "South Wales")
+  ) %>% 
+  mutate_if(is.numeric, as.integer) %>% 
+  mutate(force = if_else(force %in% c("Norfolk", "Suffolk"), 
+                         "Norfolk/Suffolk", force)) %>% 
+  group_by(year, force) %>% 
+  summarise_all(sum) %>% 
+  write_csv("../analysis_data/traffic_police_and_collisions.csv", na = "")
+```
+
 

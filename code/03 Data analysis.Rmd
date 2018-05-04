@@ -1,0 +1,34 @@
+---
+title: "Data analysis"
+output: html_notebook
+---
+
+# Load data and create new variables for analysis
+
+All of the data imported into this file are counts (of officers, FPNs etc.). For
+the analysis, some variables need to be converted to different formats:
+
+  * traffic officers should be expressed as a proportion of all officers, and
+  * FPNs and breath tests should be expressed per officer.
+  
+This will allow these variables to be included in models along with the number
+of officers in each force.
+
+```{r}
+data <- read_csv("../analysis_data/traffic_police_and_collisions.csv") %>% 
+  mutate(
+    roads_officers_prop = roads_officers / officers,
+    fpn_all_rate = fpn_all / officers,
+    fpn_phone_rate = fpn_phone / officers,
+    fpn_speed_rate = fpn_speed / officers,
+    breath_test_rate = breath_tests  /officers
+  )
+```
+
+
+# Collisions vs officers
+
+```{r}
+
+```
+
