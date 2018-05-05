@@ -31,3 +31,31 @@ harmonise_force <- function (force_name) {
 }
 ```
 
+## Test minimum findable effect size for a variable in an OLS model
+
+  1. Specify a base model without the term of interest for comparison purposes.
+  2. Construct a dataset with a known relationship between the response variable
+     and the variable of interest, incorporating the known variance of that
+     variable, e.g. specify that an extra 100 officers will lead to a certain
+     decrease in the accident rate and then construct the variable based on 
+     that.
+  3. Run that model and use the formula at https://www.statmethods.net/stats/power.html
+     to calculate f^2 using the differences between R^2 for the two models.
+  4. Use f^2 to calculate the minimum sample size needed to detect an effect of
+     that size using `pwr::pwr.f2.test()`. Remember that `v` in that function is
+     the denominator degrees of freedom and sample size `n = v + u + 1` as 
+     explained by [Ford (2018)](https://cran.r-project.org/web/packages/pwr/vignettes/pwr-vignette.html).
+
+All this is likely to be easier if the continuous predictors are both scaled and 
+mean-centered using `scale()`.
+
+An alternative method to consider is outlined from page 10 
+of [Blomberg 2014](https://pdfs.semanticscholar.org/2b85/0bb035e93663f835a5453c4f02ae55ac65da.pdf)
+which would use repeated `anova()` tests to simulate the likelihood of a given
+effect size producing a model that was a significant improvement on the base
+model produced at step 1 (above).
+
+The result of this would be something like "a one-SD increase in police officers
+(X officers in the average force) would have to be associated with a Y change 
+[or possibly 'decrease' — think if one- or two-tailed is needed] in accidents in
+order to have an 80% chance of being detected using this model."

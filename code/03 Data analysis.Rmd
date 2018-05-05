@@ -30,6 +30,7 @@ d <- read_csv("../analysis_data/traffic_police_and_collisions.csv") %>%
     fpn_phone_rate = fpn_phone / officers,
     fpn_speed_rate = fpn_speed / officers,
     breath_test_rate = breath_tests  /officers,
+    fpn_camera_rate = fpn_camera / (million_km / 10),
     acc_all_rate = acc_all / (million_km / 10),
     acc_ksi_rate = acc_ksi / (million_km / 10),
     acc_drink_rate = acc_drink / (million_km / 10),
@@ -53,60 +54,46 @@ d <- d %>% mutate(
   fpn_all_rate_mctr = scale(fpn_all_rate, center = TRUE, scale = FALSE),
   fpn_phone_rate_mctr = scale(fpn_phone_rate, center = TRUE, scale = FALSE),
   fpn_speed_rate_mctr = scale(fpn_speed_rate, center = TRUE, scale = FALSE),
+  fpn_camera_rate_mctr = scale(fpn_camera_rate, center = TRUE, scale = FALSE),
   breath_test_rate_mctr = scale(breath_test_rate, center = TRUE, scale = FALSE)
 )
 ```
 
+## Creating lag variables
 
-## Accounting for types of force
-
-Analysis of the residuals of models of the form `accidents ~ officers + …`
-showed patterns in the residuals by force, which appeared to indicate how urban
-the forces were. To account for this, a variable is included indicating the 
-type of force (urban or rural) using the classifications shown in footnotes on
-page 176 of [Higgins et al (2010)](https://assets.publishing.service.gov.uk/government/uploads/system/uploads/attachment_data/file/116360/hosb1210-chap7.pdf).
+We know that there is a correlation structure in our data since accident rates 
+are likely to be autocorrelated for each force. We can specify this in the model 
+structure, but it is probably easier to simply include an appropriate lag term
+as a predictor in the model.
 
 ```{r}
 d <- d %>% 
-  mutate(force_type = case_when(
-    force %in% c("Metropolitan") ~ "Metropolitan",
-    force %in% c("Greater Manchester", "West Midlands") ~ "large",
-    TRUE ~ "other"
-  )) %>% arrange(year, force)
-  # mutate(force_type = case_when(
-  #   force %in% c("Cleveland", "Greater Manchester", "Hertfordshire", 
-  #                "Lancashire", "City of London", "Merseyside", "Metropolitan",
-  #                "Northumbria", "Nottinghamshire", "South Yorkshire", "Surrey",
-  #                "West Midlands", "West Yorkshire") ~ "urban",
-  #   TRUE ~ "rural"
-  # )) %>% arrange(year, force)
+  arrange(year) %>% 
+  group_by(police_force) %>% 
+  mutate(
+    acc_all_rate_lag = lag(acc_all_rate),
+    acc_ksi_rate_lag = lag(acc_ksi_rate)
+  ) %>% 
+  ungroup()
 ```
 
-
-
-Exploratory analysis shows that:
-
-  * City of London has very high accident rates relative to vehicle kilometres,
-  * The Met comes out as a substantial outlier in any models, probably because
-    of its size and potentially also because it is likely that the relationships
-    between the variables in London is different from those in the rest of the
-    country.
-
-To prevent these forces skewing the models, they are excluded here.
-
-```{r}
-d <- d %>% filter(!force %in% c("City of London", "Metropolitan"))
-```
 
 
 # Checking model assumptions
 
-GLS regression requires a normally distributed response variable, so first we
+OLS regression requires a normally distributed response variable, so first we
 should check this. We're primarily interested in KSIs, so this is the data we'll
 check.
 
 ```{r}
 hist(d$acc_ksi_rate, breaks = 100)
+```
+
+The outlier variables are all for City of London, so this force will be removed
+from the data before analysis.
+
+```{r}
+d <- d %>% filter(police_force != "City of London")
 ```
 
 
@@ -120,25 +107,35 @@ m <- list()
 
 We need an empty model to compare our models to. Note that `all_` refers to
 models predicting *all* collisions, regardless of severity or contributory
-factors, while `ksi_` refers to collisions in which somewas was Killed or
-Seriously Injured.
+factors, while `ksi_` refers to collisions in which somewas was *Killed or 
+Seriously Injured*.
 
-In these models, `corAR1()` specifies that the data have first-order
-autocorrelation, with `1 | force` saying that the data are grouped by force.
-`varIdent(form = ~ 1 | year)` specifies that the variance in the data may be 
-different across years. `anova()` tests showed that these specifications fit
-the data better than models without these terms.
+This 'empty' model actually includes the lag term, since this is required for
+the structure of the data to be modelled correctly.
 
 ```{r}
-m[["ksi_empty"]] <- gls(
-  acc_ksi_rate ~ 1, 
-  data = d, 
-  correlation = corAR1(form = ~ 1 | police_force),
-  weights = varIdent(form = ~ 1 | year),
-  method = "ML"
+m[["ksi_empty"]] <- lm(
+  acc_ksi_rate ~ acc_ksi_rate_lag, 
+  data = d
 )
 summary(m$ksi_empty)
 ```
+
+We can also use this model to check if the lag term is doing its job by dealing
+with the autocorrelation in the data.
+
+```{r}
+acf(residuals(m$ksi_empty, type = "pearson"))
+```
+
+We can also use a Durbin-Watson test to check the same thing.
+
+```{r}
+lmtest::dwtest(m$ksi_empty, alternative = "greater")
+```
+
+The residuals are not significantly auto-correlated, so the lag term (together
+with the grouping variable) seems to be doing its job.
 
 
 # Collisions vs officers
@@ -146,13 +143,19 @@ summary(m$ksi_empty)
 This first model predicts collisions using number of officers.
 
 ```{r}
-m[["ksi_ofc"]] <- update(m$ksi_empty, . ~ force_type + officers_mctr)
+m[["ksi_ofc"]] <- update(m$ksi_empty, . ~ . + police_force + officers_mctr)
 summary(m$ksi_ofc)
 ```
 
-From this we can see that the co-efficient for `officers_mctr` is significant
-but very small: each additional officer decreases the rate of accidents by
--2.05^-5 per million vehicle kilometres.
+From this we can see that the co-efficient for `officers_mctr` is very small and
+not significant. The `police_force` variable is significant, which is to be
+expected.
+
+```{r}
+anova(m$ksi_empty, m$ksi_ofc)
+```
+
+The new model is also better than the empty model.
 
 
 # Collisions vs officers and traffic officers
@@ -166,7 +169,14 @@ summary(m$ksi_ofc_tpc)
 ```
 
 The co-efficient for `roads_officers_prop_mctr` is larger than for 
-`officers_mctr` but non-significant. 
+`officers_mctr` but non-significant.
+
+```{r}
+anova(m$ksi_empty, m$ksi_ofc, m$ksi_ofc_tpc)
+```
+
+As expected (since the co-efficient for the only new variable is not 
+significant) the new model is not significantly better than the old one.
 
 
 # Collisions vs officers, traffic officers and activity
@@ -181,13 +191,30 @@ summary(m$ksi_ofc_tpc_act)
 ```
 
 ```{r}
-tibble(
-  residuals = residuals(m$ksi_ofc, type = "pearson"), 
-  values = fitted.values(m$ksi_ofc), 
-  force_type = d$force_type, 
-  year = d$year
-) %>% 
-  ggplot(aes(x = values, y = residuals, group = force_type, colour = force_type)) + 
-    geom_point() 
+anova(m$ksi_empty, m$ksi_ofc, m$ksi_ofc_tpc, m$ksi_ofc_tpc_act)
 ```
 
+
+# Collisions vs officers, activity and camera activity
+
+```{r}
+m[["ksi_ofc_tpc_act_cam"]] <- update(m$ksi_ofc_tpc_act, 
+  . ~ . + fpn_camera_rate_mctr)
+summary(m$ksi_ofc_tpc_act_cam)
+```
+
+```{r}
+anova(m$ksi_empty, m$ksi_ofc_tpc_act, m$ksi_ofc_tpc_act_cam)
+```
+
+# Next things to consider
+
+  * The need for an interaction term between `police_force` and `officers_mctr`
+    because the effect of more officers might be different in different areas.
+    Since `police_force` has `r length(levels(d$police_force))` levels, an 
+    interaction term would be unwealdy, so this would necessity categorising
+    forces, probably based on how urban they are. Three categories would 
+    probably be OK: very urban (Met, GMP, WMP and maybe Merseyside), urban and 
+    rural.
+  * Simulating the power of the model to detect associations between accidents
+    and each of the predictors.
