@@ -1,6 +1,7 @@
 ---
 title: "Data analysis"
-output: html_notebook
+output:
+  html_notebook: default
 ---
 
 # Load data and create new variables for analysis
@@ -14,21 +15,179 @@ the analysis, some variables need to be converted to different formats:
 This will allow these variables to be included in models along with the number
 of officers in each force.
 
+Since the Met is so much bigger than other forces, it's necessary to convert the
+counts of accidents into a rate per 10 million vehicle kilometres travelled. 
+This avoids skewing the residuals of the regression models by having such a 
+large outlier in the data.
+
+Finally, we need to convert `force` from a character to a factor.
+
 ```{r}
-data <- read_csv("../analysis_data/traffic_police_and_collisions.csv") %>% 
+d <- read_csv("../analysis_data/traffic_police_and_collisions.csv") %>% 
   mutate(
     roads_officers_prop = roads_officers / officers,
     fpn_all_rate = fpn_all / officers,
     fpn_phone_rate = fpn_phone / officers,
     fpn_speed_rate = fpn_speed / officers,
-    breath_test_rate = breath_tests  /officers
+    breath_test_rate = breath_tests  /officers,
+    acc_all_rate = acc_all / (million_km / 10),
+    acc_ksi_rate = acc_ksi / (million_km / 10),
+    acc_drink_rate = acc_drink / (million_km / 10),
+    acc_phone_rate = acc_phone / (million_km / 10),
+    acc_speed_rate = acc_speeding / (million_km / 10),
+    police_force = as.factor(force)
   )
+```
+
+## Centering variables
+
+To ease interpretation of the intercept terms in the models below, we should
+mean-center some of the variables. Otherwise the intercept term will be the 
+rate of accidents expected if there were no police etc.
+
+```{r}
+d <- d %>% mutate(
+  officers_mctr = scale(officers, center = TRUE, scale = FALSE),
+  roads_officers_prop_mctr = scale(roads_officers_prop, center = TRUE, 
+                                   scale = FALSE),
+  fpn_all_rate_mctr = scale(fpn_all_rate, center = TRUE, scale = FALSE),
+  fpn_phone_rate_mctr = scale(fpn_phone_rate, center = TRUE, scale = FALSE),
+  fpn_speed_rate_mctr = scale(fpn_speed_rate, center = TRUE, scale = FALSE),
+  breath_test_rate_mctr = scale(breath_test_rate, center = TRUE, scale = FALSE)
+)
+```
+
+
+## Accounting for types of force
+
+Analysis of the residuals of models of the form `accidents ~ officers + …`
+showed patterns in the residuals by force, which appeared to indicate how urban
+the forces were. To account for this, a variable is included indicating the 
+type of force (urban or rural) using the classifications shown in footnotes on
+page 176 of [Higgins et al (2010)](https://assets.publishing.service.gov.uk/government/uploads/system/uploads/attachment_data/file/116360/hosb1210-chap7.pdf).
+
+```{r}
+d <- d %>% 
+  mutate(force_type = case_when(
+    force %in% c("Metropolitan") ~ "Metropolitan",
+    force %in% c("Greater Manchester", "West Midlands") ~ "large",
+    TRUE ~ "other"
+  )) %>% arrange(year, force)
+  # mutate(force_type = case_when(
+  #   force %in% c("Cleveland", "Greater Manchester", "Hertfordshire", 
+  #                "Lancashire", "City of London", "Merseyside", "Metropolitan",
+  #                "Northumbria", "Nottinghamshire", "South Yorkshire", "Surrey",
+  #                "West Midlands", "West Yorkshire") ~ "urban",
+  #   TRUE ~ "rural"
+  # )) %>% arrange(year, force)
+```
+
+
+
+Exploratory analysis shows that:
+
+  * City of London has very high accident rates relative to vehicle kilometres,
+  * The Met comes out as a substantial outlier in any models, probably because
+    of its size and potentially also because it is likely that the relationships
+    between the variables in London is different from those in the rest of the
+    country.
+
+To prevent these forces skewing the models, they are excluded here.
+
+```{r}
+d <- d %>% filter(!force %in% c("City of London", "Metropolitan"))
+```
+
+
+# Checking model assumptions
+
+GLS regression requires a normally distributed response variable, so first we
+should check this. We're primarily interested in KSIs, so this is the data we'll
+check.
+
+```{r}
+hist(d$acc_ksi_rate, breaks = 100)
+```
+
+
+# Model preparation
+
+This list will store the results of all the models run below.
+
+```{r}
+m <- list()
+```
+
+We need an empty model to compare our models to. Note that `all_` refers to
+models predicting *all* collisions, regardless of severity or contributory
+factors, while `ksi_` refers to collisions in which somewas was Killed or
+Seriously Injured.
+
+In these models, `corAR1()` specifies that the data have first-order
+autocorrelation, with `1 | force` saying that the data are grouped by force.
+`varIdent(form = ~ 1 | year)` specifies that the variance in the data may be 
+different across years. `anova()` tests showed that these specifications fit
+the data better than models without these terms.
+
+```{r}
+m[["ksi_empty"]] <- gls(
+  acc_ksi_rate ~ 1, 
+  data = d, 
+  correlation = corAR1(form = ~ 1 | police_force),
+  weights = varIdent(form = ~ 1 | year),
+  method = "ML"
+)
+summary(m$ksi_empty)
 ```
 
 
 # Collisions vs officers
 
-```{r}
+This first model predicts collisions using number of officers.
 
+```{r}
+m[["ksi_ofc"]] <- update(m$ksi_empty, . ~ force_type + officers_mctr)
+summary(m$ksi_ofc)
+```
+
+From this we can see that the co-efficient for `officers_mctr` is significant
+but very small: each additional officer decreases the rate of accidents by
+-2.05^-5 per million vehicle kilometres.
+
+
+# Collisions vs officers and traffic officers
+
+We can add the proportion of officers who are traffic officers to the model to 
+see if officers with training and experience in traffic matters has any effect.
+
+```{r}
+m[["ksi_ofc_tpc"]] <- update(m$ksi_ofc, . ~ . + roads_officers_prop_mctr)
+summary(m$ksi_ofc_tpc)
+```
+
+The co-efficient for `roads_officers_prop_mctr` is larger than for 
+`officers_mctr` but non-significant. 
+
+
+# Collisions vs officers, traffic officers and activity
+
+We're interested in two types of traffic policing activity: FPNs issued (by 
+officers, not by fixed automatic cameras) and breath tests.
+
+```{r}
+m[["ksi_ofc_tpc_act"]] <- update(m$ksi_ofc_tpc, 
+  . ~ . + fpn_all_rate_mctr + breath_test_rate_mctr)
+summary(m$ksi_ofc_tpc_act)
+```
+
+```{r}
+tibble(
+  residuals = residuals(m$ksi_ofc, type = "pearson"), 
+  values = fitted.values(m$ksi_ofc), 
+  force_type = d$force_type, 
+  year = d$year
+) %>% 
+  ggplot(aes(x = values, y = residuals, group = force_type, colour = force_type)) + 
+    geom_point() 
 ```
 

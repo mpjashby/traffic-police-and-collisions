@@ -12,6 +12,7 @@ easily reloaded after a restart.
 # loading tidyverse loads ggplot2, dplyr, tidyr, readr, purrr, tibble, stringr 
 # and forcats
 library("tidyverse")
+library("nlme") # gls regression
 ```
 
 # Functions
