@@ -210,7 +210,9 @@ anova(m$ksi_empty, m$ksi_ofc_tpc_act, m$ksi_ofc_tpc_act_cam)
 # Next things to consider
 
   * The need for an interaction term between `police_force` and `officers_mctr`
-    because the effect of more officers might be different in different areas.
+    because the effect of more officers might be different in different areas
+    — the current models only capture variation in officers for the reference
+    force and assume it's the same for all other forces.
     Since `police_force` has `r length(levels(d$police_force))` levels, an 
     interaction term would be unwealdy, so this would necessity categorising
     forces, probably based on how urban they are. Three categories would 
