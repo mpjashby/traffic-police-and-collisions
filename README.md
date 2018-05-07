@@ -28,3 +28,8 @@ The code is split into separate files according to function:
   3. Data analysis
   4. Outputs
 
+
+# Licence
+
+The code in this repository is licensed under the [Creative Commons Attribution 
+4.0 International licence](http://creativecommons.org/licenses/by/4.0/).
